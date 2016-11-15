@@ -1,0 +1,17 @@
+---
+title: "Applied Economic Analysis"
+author: "Dr Stephen Kinsella"
+date: ""
+output: beamer_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Welcome to this module
+
+* This is a brand new module, EC4044. 
+* This is the first time it has been taught. So bear with me. 
+* Slides will be added to this master version as I get the chance to build them out. 
+
