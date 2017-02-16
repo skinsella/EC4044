@@ -6,31 +6,37 @@ output:
   beamer_presentation: 
     fig_caption: yes
 ---
-```{r setup, include=FALSE, echo=FALSE, warning=FALSE, error=FALSE}
-library(graphics)
-knitr::opts_chunk$set(cache=TRUE)
-#install.packages("mosaicData") 
+```{r setup, include=FALSE, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+knitr::opts_chunk$set(
+	message = FALSE,
+	warning = FALSE,
+	cache = TRUE
+)
+##install.packages("mosaicData") 
 library(mosaicData)
-#install.packages("haven") 
+##install.packages("haven") 
 library(haven)
-#install.packages(ggplot2") 
+##install.packages(ggplot2") 
 library(tidyverse)
-#install.packages("readxl") 
+##install.packages("readxl") 
 library(readxl)
-#install.packages("scales") 
+##install.packages("scales") 
 library(scales)
-#install.packages("UsingR") 
+##install.packages("UsingR") 
 library(UsingR)
-#install.packages("memisc") 
+##install.packages("memisc") 
 library(memisc)
-#install.packages("pander")
-#devtools::install_github('Rapporter/pander') To get the latest and greatest version. 
+##install.packages("pander")
+##devtools::install_github('Rapporter/pander') To get the latest and greatest version. 
 library(pander)
-#install.packages("fivethirtyeight")
+##install.packages("fivethirtyeight")
 library(fivethirtyeight)
+#install.packages('blscrapeR')
+library(blscrapeR)
+library(reshape2)
 ```
 
-# Introduction 
+## Introduction 
 
 > The formulation of a problem is often more essential than its solution which may be merely a matter of mathematical or experimental skill. 
 --Albert Einstein
@@ -41,7 +47,7 @@ library(fivethirtyeight)
 —WH Auden
 
 
-# Welcome to this module
+## Welcome to this module
 
 * This is a *brand new* module, EC4044. 
 * This is the first time it has been taught. So please, bear with me. 
@@ -49,12 +55,12 @@ library(fivethirtyeight)
 * In addition to being a pedagogical experiment, this is also technical experiment. 
 * We'll be using some open-source tools, your feedback will be crucial as we develop the material. 
 
-# Brief note on the slides
+## Brief note on the slides
 
 - The slides and the code that generates them are a part of the course. They will be added to incrementally, so you should expect to see longer and longer slide decks being created. 
 - That is, I won't be giving out individual slides per lecture. You will see why in a moment.
 
-# Learning outcomes for this module
+## Learning outcomes for this module
 
 0. Understand principles of data science;
 1. Understand where economic data come from;
@@ -62,21 +68,21 @@ library(fivethirtyeight)
 3. Estimate simple economic models
 4. Understand the merits of qualitative as well as quantitative economic analysis. Economics is not all ones and zeroes. You do have to talk to real people from time to time. 
 
-# How you'll learn
+## How you'll learn
 
 0. Hands-on, with your laptops or tablets in class. Laptops are better, but whatever works for you. 
 1. The idea is to make this module, as far as possible, one 36 hour-long lab. 
 2. You'll become familiar with a cutting edge statistical language and gain the ability to produce really nice reports, slides, and data analysis using this software. You'll also learn how to interview individuals and groups. 
 3. Importantly, your work will be open for everyone to view. You'll gain an appreciation of the kind of work that gets social scientists interested in things. 
 
-# Key Resources
+## Key Resources
 
 - David Freedman, [*Statistical Models, Theory and Practice*](https://www.amazon.com/Statistical-Models-Practice-David-Freedman/dp/0521743850), Cambridge University Press, 2009. This is the best book on statistics I have ever read. 
 - Garrett Grolemund and Hadley Wickham, [R for data science](http://r4ds.had.co.nz), O'Reilly, 2016.
 - Gary Koop, *Analysis of Economic Data*, Wiley, 2013. This book is a classic and fun to read. 
 - *Lots* of online resources with R, especially [Datacamp](http://www.datacamp.com)
 
-# Key Software resources
+## Key Software resources
 
 - R and Rstudio. 
 - Github, where all the notes, code, and other elements for the course will be. 
@@ -84,7 +90,7 @@ library(fivethirtyeight)
 - SULIS contains the readings.
 - Turnitin, for the final data project. 
 
-# Why R?
+## Why R?
 
 - This is not an econometrics class, or a basic statistics class--you are taking one of those. 
 - This is about using the theories you've learned over the last 3 semesters and learning how to go about investigating the real world and their applicability to that world. 
@@ -92,23 +98,24 @@ library(fivethirtyeight)
 - That is, I want you to be able to drive a car, not tinker with its engine or repair it 
 - This means we'll be skipping over a lot of detail to get to the important points.
 
-# An example of what I mean
+## An example of what I mean
 
-```{r, echo=FALSE}
-hj <- read_dta("~/Dropbox/EC4044/HallJones400/HallJones1999_1.dta")
-yl <- as.numeric(exp(hj$logYL)) # Create a new variable to measure output per worker
-ky <- as.numeric(exp(hj$logKL - hj$logYL)) # Capital-output ratio 
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+url<-"https://dl.dropboxusercontent.com/s/wnyj5ke6yfaqadq/HallJones1999_1.dta?dl=0"
+hj <- read_dta(url)
+yl <- as.numeric(exp(hj$logYL)) ## Create a new variable to measure output per worker
+ky <- as.numeric(exp(hj$logKL - hj$logYL)) ## Capital-output ratio 
 ggplot(data=hj)+geom_smooth(mapping=aes(x=yl, y = ky))+ggtitle("Output per worker and capital per worker across the world")+xlab("Output Per Worker")+ylab("Capital per worker")
 ```
 
-# Assessment
+## Assessment
 
 - 2 Datacamp courses, 'introducing you to R', worth 5% and 'correlation and regression' in R, worth 10%. These are both due by the end of week 6, but you should aim to have the introduction course sorted by week 3 at the latest. 
 - 1 *optional* Datacamp course, which you choose, worth 10%. Peruse the course catalogue and let us know which one you want. Guide your own learning. You have access to the entire suite of modules for the entire semester. This would cost you 30 euros every month to learn, and you can add the certifications to you linkedin profiles etc for signalling purposes. 
 - 1 end of term project, due week 13. Details of this will be given in the tutorials, it is worth 75%-85%, depending.  
 - The objective is not to over-assess you. Rather, there are some basics you need to know to progress in this module, and then to let you play with the data and the tools we give you for 6-8 weeks. The more you use R for economic analysis, the better you'll be at it. 
 
-# Lecture 1: Movitation, statistical basics and data handling
+## Lecture 1: Movitation, statistical basics and data handling
 
 - Types of economic data: micro and macro
 - Observation studies and experiments
@@ -119,13 +126,13 @@ ggplot(data=hj)+geom_smooth(mapping=aes(x=yl, y = ky))+ggtitle("Output per worke
 - Example: Hall and Jones, Growth Accounting, 1999. 
 - Reading: Koop, Chapter 2, Freedman, Chapter 1
 
-# Lab 1: Introduction to R (Teetor, Chapters 1 and 2)
+## Lab 1: Introduction to R (Teetor, Chapters 1 and 2)
 
 - Installing R + Rstudio
 - Getting Github, Quandl, and FRED accounts
 - Working through [Twotorials](http://twotorials.com)
 
-# Lecture 2: Modeling using simple regression (Freedman Chapter 1, Koop Chapter 4 )
+## Lecture 2: Modeling using simple regression (Freedman Chapter 1, Koop Chapter 4 )
 
 - Understanding correlation
 - Why are variables correlated
@@ -133,14 +140,14 @@ ggplot(data=hj)+geom_smooth(mapping=aes(x=yl, y = ky))+ggtitle("Output per worke
 - Complexities
 - Example: Wage/Salary data from 1985.
 
-# Lab 2: Working with data in R (Teetor, Chapter 3)
+## Lab 2: Working with data in R (Teetor, Chapter 3)
 
 - Getting data into R
 - Simple manipulation
 - Your first graphs
 - Interpreting your first graphs.
 
-# Lecture 3: More on Simple Regression (Koop, Chapter 4, Freedman, Chapter 3)
+## Lecture 3: More on Simple Regression (Koop, Chapter 4, Freedman, Chapter 3)
 
 - Best fitting line
 - Interpreting OLS estimates
@@ -150,7 +157,7 @@ ggplot(data=hj)+geom_smooth(mapping=aes(x=yl, y = ky))+ggtitle("Output per worke
 - Calculating confidence intervals for $\beta$
 - Example: regression by hand, roll your own betas using R.
 
-# Lab 3: Matrix algebra FTW (Freedman Chapter 4)
+## Lab 3: Matrix algebra FTW (Freedman Chapter 4)
 
 - Concepts you need to know to get the most out of the rest of the course. 
 - What is a matrix
@@ -159,7 +166,7 @@ ggplot(data=hj)+geom_smooth(mapping=aes(x=yl, y = ky))+ggtitle("Output per worke
 - Positive definite matrices
 
 
-# Lecture 4: Multiple Regression  (Freedman, Chapter 5)
+## Lecture 4: Multiple Regression  (Freedman, Chapter 5)
 
 - Explaining variance in multiple regression 
 - Statistical aspects
@@ -167,80 +174,80 @@ ggplot(data=hj)+geom_smooth(mapping=aes(x=yl, y = ky))+ggtitle("Output per worke
 - Biases: multicollinearity/heteroskedasticity/autocorrelation 
 - Example: education spending and educational attainment
 
-# Lab 4: Working with complex data sets in R
+## Lab 4: Working with complex data sets in R
 
 - Cleaning and working with data
 - Running regressions, outputting tables, interpreting results
 - Mashing data sets together
 - Writing reports & making slides with Rmarkdown. 
 
-# Lecture 5: Multiple regression 2 (Freedman, Chapter 5)
+## Lecture 5: Multiple regression 2 (Freedman, Chapter 5)
 
 - Multiple regression with dummy variables
 - Distributed lag models
 - Applying theory to data
 - Example: Gender pay disparities & producer theory. 
 
-# Lab 5: Working with complex data sets in R, part deux
+## Lab 5: Working with complex data sets in R, part deux
 
 - Cleaning and working with data
 - Running regressions, outputting tables, interpreting results
 - Example: Mashing HUGE data sets together
 
-# Lecture 6: Time series analysis (Wickham, )
+## Lecture 6: Time series analysis (Wickham, )
 
 - Autocorrelation and $AR(1)$ processes
 - Stationarity and Unit roots
 - Example: Volatility in asset prices
 - Example (gapminder): How does life expectancy change over time  for each country?
 
-# Lab 6: Time series data in R
+## Lab 6: Time series data in R
 
-# Lecture 7: Machine learning
+## Lecture 7: Machine learning
 
 - Introduction to machine learning 
 - Classification and maximum likelihood
 - Neural networks
 - Example: zip code recognition problems
 
-# Lab 7: Your first neural network
+## Lab 7: Your first neural network
 
 
-# Lecture 8: Machine learning 2
+## Lecture 8: Machine learning 2
 
 - Discovering meaningful patterns in massive data
 - Designing models with hidden and observed variables. 
 - Statistical learning, criticising the model. 
 
-# Lab 8: More ML
+## Lab 8: More ML
 
-# Lecture 9: Big data and public policy
+## Lecture 9: Big data and public policy
 
 - Big data, what it is, and what it isn't. 
 - Machine learning and public policy
 - Manski vs Minsky
 
-# Lab 9: Working on your data-project
+## Lab 9: Working on your data-project
 
 
-# Lecture 10: Interviewing & qualitative analysis
+## Lecture 10: Interviewing & qualitative analysis
 
 - Applied economic analysis is not just thinking about data and numbers. It is also about finding things out about by simply asking people. 
 - *Why Wages Don't Fall during a Recession*, Truman F. Bewley.
 - Structured vs Unstructured interview techniques
 
 
-# Lab 10: Working on your data project
+## Lab 10: Working on your data project
 
-# Lecture 11: Interviewing & qualitative analysis
+## Lecture 11: Interviewing & qualitative analysis
 
 - Survey data vs interview data
 - Example: coding and thematic analysis [Burnard et al, 2008](http://www.nature.com/bdj/journal/v204/n8/full/sj.bdj.2008.292.html) 
 - Exercises in interviewing & transcription. 
 
-# Lecture 12: Recap
+## Lecture 12: Recap
 
-# Why it is useful to learn these skills in this way and in this order.
+## Why it is useful to learn these skills in this way and in this order.
 
 My overarcing goal is to help you work as economists. 
 
@@ -252,12 +259,12 @@ My overarcing goal is to help you work as economists.
 R can help you do all of these things.
 
 
-# This is the basic process of applied economic analysis
+## This is the basic process of applied economic analysis
 
 ![Source: Wickham, 2016](data-science.png)
 
 
-# Lecture 1: Movitation, statistical basics and data handling
+## Lecture 1: Movitation, statistical basics and data handling
 
 - Types of economic data: micro and macro
 - Observation studies and experiments
@@ -268,14 +275,14 @@ R can help you do all of these things.
 - Example: Hall and Jones, Growth Accounting, 1999. 
 - Reading: Koop, Chapter 2, Freedman, Chapter 1
 
-# Why we use models
+## Why we use models
 
 - to summarise data
 - to predict the future
 - to predict the results of interventions
 
 
-# Example: Consumption and Income in the USA, 1950 - 1985 (Note the code that generates the figure is here)
+## Example: Consumption and Income in the USA, 1950 - 1985 (Note the code that generates the figure is here)
 
 ```{r, echo=TRUE, fig.height=5, fig.with=7, message=FALSE, warning=FALSE}
 cf<-read.delim("http://web.uvic.ca/~dgiles/blog/consump.dat", 
@@ -286,13 +293,14 @@ summary(REG)
 plot(predict(REG))
 plot(REG)
 ```
-# Example
+## Example
 ```{r}
-dep <- read_excel("~/Dropbox/EC4044/dep.xlsx")
+url<- "https://dl.dropboxusercontent.com/s/1hp05328ek2ws1e/dep.csv?dl=0"
+dep <- read_csv(url)
 qplot(Year, Dep, data = dep)+scale_x_discrete(breaks=pretty_breaks(n=10))+ggtitle("Dependency Ratio, (70+/22-69), Ireland, 1950 - 2050")+ylab("Dependency Ratio")
 ```
 
-# Digression for a mathematical refresher
+## Digression for a mathematical refresher
 
 - Economists are often interested in the relationship between two (or more) variables. 
 - A very general way of denoting a relationship is through the concept of a function. 
@@ -302,7 +310,7 @@ qplot(Year, Dep, data = dep)+scale_x_discrete(breaks=pretty_breaks(n=10))+ggtitl
 $$Y = f(X)$$
 This notation should be read “Y is a function of X ” and captures the idea that the value for Y *depends* on the value of X.
 
-# Thinking in straight lines
+## Thinking in straight lines
 
 The equation of a straight line (what was called a “linear function” above) is 
 $$Y = \alpha + \beta X$$
@@ -310,21 +318,21 @@ $$Y = \alpha + \beta X$$
 where $\alpha$ and $\beta$ are coefficients, which determine a particular line. So, for instance, setting $\alpha$ = 1 and $\beta$ = 2 defines one particular line while $\alpha$ = 4 and $\beta$  = -5 defines a different line.
 
 
-# It is probably easiest to understand straight lines by using a graph
+## It is probably easiest to understand straight lines by using a graph
 
 - In terms of an XY graph (i.e. one which measures Y on the vertical axis and X on the horizontal axis) any line can be defined by its intercept ($\alpha$) and slope ($\beta$). 
 - The slope is a measure of how much Y changes when X is changed, or dy/dx.
 
-# The XY graph of $Y = \alpha + \beta X$ for $\alpha = 1, \beta = 2$
+## The XY graph of $Y = \alpha + \beta X$ for $\alpha = 1, \beta = 2$
 
 ```{r, fig.width=7, fig.height=4}
-a= 1 # This is a parameter value.
-b= 2 # This is a parameter value.
-x= seq(from = 1, to = 20, by =1) # This command generates the x variable. 
-y = a + b*(x) # This is the equation showing how y depends on x explicitly.
-plot(y) # Plot y.
+a= 1 ## This is a parameter value.
+b= 2 ## This is a parameter value.
+x= seq(from = 1, to = 20, by =1) ## This command generates the x variable. 
+y = a + b*(x) ## This is the equation showing how y depends on x explicitly.
+plot(y) ## Plot y.
 ```
-# Notation
+## Notation
 
 - Subscripts are used to denote different observations from a variable, so $W_{1}$
  is the wage of the first individual, $W_{2}$ the wage of the second individual, and $W_{n}$ is the wage of the nth individual.
@@ -339,7 +347,7 @@ Question: what would $\sum_{i=24}^{i=29}(W_{i})$ do?
 individuals), the subscript and superscript will be dropped. 
 
 
-# Logarithms
+## Logarithms
 
 - in some cases the researcher does not work directly with a variable but with a transformed version of this variable
 - The logarithm (to the base B) of a number, A, is the power to which B must be raised to give A. The notation for this is: $log_{B}(A)$. 
@@ -347,47 +355,48 @@ individuals), the subscript and superscript will be dropped.
 - We use logs because they help us truncate data and express growth rates.
 
 
-# Levels vs rates 
+## Levels vs rates 
 
 - Level: the actual reading. EG nominal GDP for Ireland in 2011 was €173,070 billion. Nominal GDP in 2012 was €175,754 billion.
 - Rate: the change from 2011 to 2012 was (175-173)/173*100 = 1.15%, more generally $(Y_{t+1} - Y_{t})/ (Y_{t})*100$
 
-# Index numbers:  Very good at making time series data comparable to one another by choosing a base year. 
+## Index numbers:  Very good at making time series data comparable to one another by choosing a base year. 
 
 ```{r, message=FALSE, warning=FALSE, echo=FALSE}
-healtheg <- read_excel("~/Dropbox/EC4044/healtheg.xlsx") #Import the data
-df<-melt(healtheg, id="Year") #Get the data in a format ggplot will like
+url<-"https://dl.dropboxusercontent.com/s/9p9973b3vmrptkm/healtheg.csv?dl=0"
+healtheg <- read_csv(url) ##Import the data
+df<-melt(healtheg, id="Year") ##Get the data in a format ggplot will like
 ggplot(data=df)+aes(x=Year, y = value, colour= variable, group=variable)+geom_line()+ggtitle("Health Spending Per Person, 1972 = 100" )+ylab("")+scale_x_discrete(breaks=pretty_breaks(n=10))
 ```
-# Graphing proportional change over time
+## Graphing proportional change over time
 
 ```{r}
-health2 <- read_excel("~/Dropbox/EC4044/healthdef3.xlsx")
+health2 <- read_csv("https://dl.dropboxusercontent.com/s/1rm57rvk80ja2vm/health2.csv?dl=0")
 df<-melt(health2, id="Year")
 ggplot(data=df)+aes(x=Year, y = value, fill= variable, label= value)+geom_bar(stat='identity')+geom_text(size = 3, position = position_stack(vjust = 0.5))+ggtitle("Proportion spent on the Irish health service since 1994")+ylab("% of total")
 ```
 
 
-# We're also interested in: 
+## We're also interested in: 
 
 1. Identifying patterns in data
 2. Classifying events
 3. Untangling multiple causal influences
 4. Assessing strength of evidence. 
 
-# Example: does spending more on education improve outcomes? US Data
+## Example: does spending more on education improve outcomes? US Data
 
 ```{r}
 x<-summary(SAT)
 pander(x)
 ```
-# Looking at the data
+## Looking at the data
 
 ```{r, message=FALSE, warning=FALSE, echo=FALSE}
 ggplot(data=SAT) + aes(x = expend, y = total, label = state) + geom_point() + geom_text(aes(label=state),hjust=0, vjust=0) + ggtitle("Expenditure vs SAT Result")+ylab("Total SAT Score")
 ```
 
-# Careful interpreting this dataset!
+## Careful interpreting this dataset!
 
 The data are telling us spending more reduces your SAT score. Something is clearly wrong. What? 
 
@@ -395,14 +404,14 @@ The data are telling us spending more reduces your SAT score. Something is clear
 * Religious ethos
 * fraction of people taking the test? 
 
-# Looking graphically at the fraction of the population that take the SAT
+## Looking graphically at the fraction of the population that take the SAT
 
 ```{r}
 ggplot(data=SAT)+ aes(x = perc, y = total, label = state) + geom_point() + geom_text(aes(label=state))+xlab("Fraction Taking the SAT")+ylab("SAT Score")
 ```
 
 
-# A lot of the time we care about *causal* inferences
+## A lot of the time we care about *causal* inferences
 
 - right now think of causality as an 'if-then' statement
 - EG: IF the state spends more on education, will exam results THEN go up? 
@@ -411,23 +420,53 @@ ggplot(data=SAT)+ aes(x = perc, y = total, label = state) + geom_point() + geom_
     -- Nonlinear relationships, dependence between observations
     -- Need statistical descriptions which take these features into account
 
-# How do you make causal inferences? 
+## How do you make causal inferences? 
 
 - They can come form observational studies, natural experiments, randomised controlled experiments, and more. 
 - Typically economic data come from observational studies. You observe household consumption going up when disposable income goes up. 
 - Observational data are almost always confounded, meaning there's a difference between the *treatment* and *control* groups. This is because people choose to be in one group or another and you can't control that ex ante, and this affects the response. 
 
-# Example from Freedman
+```{r}
+##install.packages("tidyquant")
+library(tidyquant)
+AMZN <- tq_get("AMZN", get = "stock.prices", from = "2007-01-01", to = "2017-01-01")
+FANG <- c("FB", "AMZN", "NFLX", "GOOG") %>%
+    tq_get(get = "stock.prices", from = "2007-01-01", to = "2017-01-01")
+## Setup dates for zoom window
+end <- ymd("2017-01-01")
+start <- end - weeks(20)
+## Create chart
+AMZN %>%
+    ggplot(aes(x = date, y = close)) +
+    geom_line() + 
+    labs(title = "AMZN: Line Chart the Previous Way",
+         subtitle = "This is good, but doesn't give us open, high, low, or direction information",
+         x = "", y = "Closing Price") +
+    coord_x_date(xlim = c(start, end),
+                 ylim = c(700, 870))
+AMZN %>%
+    ggplot(aes(x = date, y = close)) +
+    geom_candlestick(aes(open = open, close = close, high = high, low = low)) + 
+    labs(title = "AMZN: New Candlestick Geom!",
+         subtitle = "Visually shows open, high, low, and close information, along with direction",
+         x = "", y = "Closing Price") +
+    coord_x_date(xlim = c(start, end),
+                 ylim = c(700, 870))
+
+```
+
+
+## Example from Freedman
 
 > for school children, shoe size is strongly correlated with reading skills. However, learning new words does not make the feet get bigger. Instead, there is a third factor involved - age. As children get older, they learn to read better and they outgrow their shoes. (According to statistical jargon (…), age is a confounder.) In the example, the confounder was easy to spot. Often, this is not so easy. And the arithmetic of the correlation coefficient does not protect you against third factors.”
 
-# Terminology
+## Terminology
 
 - Medical terminology. One group gets a pill with an active chemical, another gets a sugar pill. If the chemical wasn't useful, you should see no difference in outcome between the two groups. 
 - A control is a subject who didn't get the treatment. 
 - A controlled experiment is when the experimenter gets to decide who goes in what group. 
 
-# An early example: how we figured out smoking causes cancer
+## An early example: how we figured out smoking causes cancer
 
 - Smoking causes heart attacks, lung cancer, and other diseases. How did we figure this out? 
 - Can we compare female smokers to male smokers? No, because gender is a confounder. So we have to compare male smokers to female smokers. 
@@ -436,24 +475,24 @@ ggplot(data=SAT)+ aes(x = perc, y = total, label = state) + geom_point() + geom_
 - Continue to subset by urban/rural/etc
 - Eventually confounding effects for smoking seem very, very implausible. 
 
-# Slight problem
+## Slight problem
 
 - As you continue to add more and more explanatory variables, you reduce the size of potential study groups, and so room gets bigger for chance effects. 
 - Randomised control experiments limit the potential for confounding. 
 
-# An even earlier example: John Snow and Cholera
+## An even earlier example: John Snow and Cholera
 
 Dr John Snow produced a famous map in 1854 showing the deaths caused by a cholera outbreak in Soho, London, and the locations of water pumps in the area. 
 
 By doing this he found there was a significant clustering of the deaths around a certain pump – and removing the handle of the pump stopped the outbreak and invented epidemiology.  
 
-# Dr Snow's Map
+## Dr Snow's Map
 
 > “The simple graph has brought more information to the data analyst’s mind than any other device.” — John Tukey
 
 ![See https://github.com/lindbrook/cholera)](snow.png)
 
-# Thinking in terms of economic analysis: Population
+## Thinking in terms of economic analysis: Population
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 data(uspop)
@@ -463,7 +502,7 @@ ggplot(data=df)+geom_point(mapping=aes(y=uspop, x= years))+ggtitle("US Populatio
 ```
 
 
-# Yule: What causes poverty?
+## Yule: What causes poverty?
 
 - In the late 19th Century, Yule asked: what causes pauperism? Was it policy?
 - He gathered data and ran the following regression. (Don't worry if you don't know what a regression is yet)
@@ -475,7 +514,7 @@ $$\Delta \text{Pauper} = a + b * \Delta \text{Out} + c * \Delta \text{Old} + d *
 - Old is the percentage of the population over 65
 - Pop is the population
 
-# Data
+## Data
 
 - Yule had data from about 600 districts from 1871, 1881, and 1891.
 - There were 4 regions (urban, rural, mixed, metropolitan), giving 8 equations each to be estimated. 
@@ -483,7 +522,7 @@ $$\Delta \text{Pauper} = a + b * \Delta \text{Out} + c * \Delta \text{Old} + d *
 
 $$\sum(\Delta Paup - a -b*\Delta\text{Out}-c*\Delta\text{Old}-d*\Delta{Pop})^{2}$$
 
-# Yule's Results
+## Yule's Results
 
 The table shows some of Yule's 1899 results from table XIX of his classic study. 
 
@@ -496,7 +535,7 @@ The table shows some of Yule's 1899 results from table XIX of his classic study.
 If you want to mess around with Yule's data in R, go to [https://github.com/jrnold/yule](https://github.com/jrnold/yule)
 
 
-# Interpreting the results
+## Interpreting the results
 
 Consider the metropolitan unions. Fitting the data for 1871-1881, Yule obtained 
 $$\Delta \text{Paup} = 13.19 + 0.755\Delta\text{Out}-0.022\Delta\text{Old} - 0.322\Delta\text{Pop} + error$$
@@ -509,7 +548,7 @@ $$\Delta \text{Paup} = 1.36 + 0.324\Delta\text{Out}+1.37\Delta\text{Old} - 0.369
 The coefficient of $\Delta\text{Out}$ being relatively large and positive, Yule concludes Out-Relief causes poverty.  This is a \textcolor{red}{qualitative} inference.
 
 
-# Physics envy
+## Physics envy
 
 Yule's idea was to uncover the 'social physics' of poverty. This is not so easily done. You have to be very, very careful when applying quantitative reasoning to real world problems. These regressions are extra pieces of information to aid decisions. They should not decide for you. 
 
@@ -519,11 +558,11 @@ At best, Yule establishes \textcolor{red}{association} rather than \textcolor{re
 
 To his great credit, Yule distanced himself from his findings and eventually suggested the authorities drop his measurements all together. 
 
-# Looking at Yule another way--the modern way, using facets
+## Looking at Yule another way--the modern way, using facets
 
 ![Created using [https://github.com/jrnold/yule](https://github.com/jrnold/yule)](yule1.png)
 
-# Why causality matters
+## Why causality matters
 
 When you understand causality, you can start thinking about intervening in the system. 
 
@@ -532,14 +571,14 @@ When you understand causality, you can start thinking about intervening in the s
 - Something has to remain constant in all the change. 
 
 
-# Basic data we handle in economics
+## Basic data we handle in economics
 
 - Time series data. Data is collected at specific points in time.
 - Cross sectional data. Units across individual data ($W_{1}, W_{2}, \ldots, W_{n}$)
 - Categorical data: when answers are Yes/No, Male/Female, etc. 
 - Panel data (these have both a time series and a cross-sectional component).
 
-# Basic plotting/graphing we use to visualise these data
+## Basic plotting/graphing we use to visualise these data
 
 - XY plots/scatter plots
 - Line plots (usually for time series)
@@ -548,7 +587,7 @@ When you understand causality, you can start thinking about intervening in the s
 - Network models
 
 
-# Lecture 2: Modeling (Freedman Chapter 1, Koop Chapter 4 )
+## Lecture 2: Modeling (Freedman Chapter 1, Koop Chapter 4 )
 
 - Understanding correlation
 - Why are variables correlated
@@ -557,13 +596,13 @@ When you understand causality, you can start thinking about intervening in the s
 - Example: Wage/Salary data from 1985.
 Loads of ways to think about why you'd like to be able to do applied economic analysis
 
-# Last time: 
+## Last time: 
 
 - Descriptive stats
 - Causality
 - Graphical models & inference 
 
-# Dataclysm: a woman's age vs the age of the men who look best to her
+## Dataclysm: a woman's age vs the age of the men who look best to her
 
 ```{r, echo=FALSE, out.width = "3in", out.height="3in"}
 knitr::include_graphics("age_woman.png")
@@ -572,7 +611,7 @@ knitr::include_graphics("age_woman.png")
 Source: Christian Rudder, [*Dataclysm*](https://www.amazon.com/Dataclysm-Identity-What-Online-Offline-Selves/dp/0385347391.)
 
 
-# Aaaand from Men 
+## Aaaand from Men 
 
 (a man's age vs the age of the wommen who look best to him)
 
@@ -583,7 +622,7 @@ knitr::include_graphics("age_man.png")
 Source: Christian Rudder, [*Dataclysm*](https://www.amazon.com/Dataclysm-Identity-What-Online-Offline-Selves/dp/0385347391.)
 
 
-# Understanding the regression line: computed from five statistics
+## Understanding the regression line: computed from five statistics
 
 - the average of $x$, $\bar{x}= \frac{1}{n}\sum_{i=1}^{n}x_{i}$
 - the standard deviation of $x$, square root of $\frac{1}{n}\sum_{i=1}^{n}(x_{i}-\bar{x})^{2}$
@@ -591,12 +630,12 @@ Source: Christian Rudder, [*Dataclysm*](https://www.amazon.com/Dataclysm-Identit
 - the correlation between $x$ and $y$, $r = \frac{1}{n}\sum^{n}_{i=1}(\frac{x_{i}-\bar{x}}{s_{x}}*\frac{y_{i}-\bar{y}}{s)_{y}})$
 - We're tacitly assuming $s_{x}$ and $s_{y}$ aren't zero. 
 
-# An example
+## An example
 
 ![Source: Freedman, 2012](height.png)
 
 
-# Understanding correlation
+## Understanding correlation
 
 - Sir Francis Galton (1822-1911) made some progress on this while thinking about resemblance of parents and sons.
 
@@ -604,14 +643,14 @@ Source: Christian Rudder, [*Dataclysm*](https://www.amazon.com/Dataclysm-Identit
 
 - Learn more at [Roberto Bertolusso](https://rbertolusso.github.io/posts/LR01-correlation). Next few slides draw heavily on his excellent exposition. 
 
-# Pearson's data look like this
+## Pearson's data look like this
 
 ```{r, echo=FALSE}
-data(father.son) # Load Pearson's father and son data
-head(father.son)   ## Look at First six pairs
+data(father.son) ## Load Pearson's father and son data
+head(father.son)   #### Look at First six pairs
 ```
 
-# And this
+## And this
 
 ```{r, echo=FALSE}
 x <- father.son$fheight
@@ -627,7 +666,7 @@ axis(1, at = axp, labels = axp)
 axis(2, at = axp, labels = axp)
 ```
 
-# Interpreting this figure
+## Interpreting this figure
 
 - The scatter diagram above is a cloud shaped something like a rugby ball with points straggling off the edges
 
@@ -637,7 +676,7 @@ axis(2, at = axp, labels = axp)
 
 - Let’s draw a 45-degree line $y = x$ through the cloud of points. (What do you think it represents?)
 
-# Pearson with a 45 degree line
+## Pearson with a 45 degree line
 
 ```{r, echo=FALSE}
 par(mfrow=c(2,2))
@@ -671,8 +710,8 @@ axis(1, at = axp, labels = axp)
 axis(2, at = axp, labels = axp)
 abline(a = 0, b = 1, lty = 2)
 
-## Families where father is 72 inches tall (to the nearest inch)
-## plotted in a vertical strip.
+#### Families where father is 72 inches tall (to the nearest inch)
+#### plotted in a vertical strip.
 abline(v=c(71.5, 72.5), lty = 3)
 with(subset(father.son, fheight >= 71.5 & fheight < 72.5),
      points(fheight, sheight, col="red"))
@@ -686,16 +725,16 @@ axp <- seq(58, 80, by = 2)
 axis(1, at = axp, labels = axp)
 axis(2, at = axp, labels = axp)
 
-## Point of averages
+#### Point of averages
 meanx <- mean(x)
 meany <- mean(y)
 abline(v=meanx, col="green")
 abline(h=meany, col="green")
-# Massive thanks to Roberto Bertolusso for producing most of this code. 
+## Massive thanks to Roberto Bertolusso for producing most of this code. His excellent lecture is here: https://rbertolusso.github.io/posts/LR01-correlation
 ```
 
 
-# Intepreting these figures
+## Intepreting these figures
 
 - There is still a lot of variability in the heights of the sons within the cloud of points we identified. 
 - Knowing the father’s height still leaves a *lot* of room
@@ -704,7 +743,7 @@ for error for an individual father in trying to guess the his son’s height
 When there is a weak association, knowing one variable does *not* help
 much in guessing (predicting) the other.
 
-# Interpreting these figures 2
+## Interpreting these figures 2
 
 - In social science (and other disciplines) studies of relationship between two variables, it is usual to call one *independent* and the other as *dependent*. You will see many different descriptions of these relationships in words. There is only one in maths. 
 - Usually too, the independent one is thought to influence the dependent one (rather than the other way around).
@@ -713,14 +752,14 @@ much in guessing (predicting) the other.
 This would be appropriate if the problem were to guess a father’s height from his son’s height. Do you think this would be useful?
 
 
-# The regression line
+## The regression line
 
 - Think of the regression line, for predicting $x$ from $y$, as a linear approximation to the 'graph of averages'. The graph of averages is the collection of points where the x-coordinate is the center of the vertical strip, and the y-coordinate the mean of all the y-values contained in that strip.
 
-# Pearson's regression line (graph of averages)
+## Pearson's regression line (graph of averages)
 
 ```{r, echo=FALSE}
-## Graph of averages.
+#### Graph of averages.
 data("father.son")
 plot(x, y,
      xlim = c(58, 80), ylim = c(58, 80), col = "lightgrey",
@@ -731,11 +770,11 @@ axp <- seq(58, 80, by = 2)
 axis(1, at = axp, labels = axp)
 axis(2, at = axp, labels = axp)
 
-## Point of averages (center of the cloud)
+#### Point of averages (center of the cloud)
 abline(v = meanx, col = "green")
 abline(h = meany, col = "green")
 
-## Graph of averages.
+#### Graph of averages.
 sgav <- with(father.son, tapply(sheight, round(fheight, 0), mean))
 sgavnum <- with(father.son, tapply(sheight, round(fheight, 0), length))
 
@@ -743,21 +782,21 @@ points(as.numeric(names(sgav)), sgav, col = "red", pch = 16)
 text(as.numeric(names(sgav)), sgav, sgavnum, pos = 3)
 ```
 
-# Another way to look at the data
+## Another way to look at the data
 
 ```{r, warning=FALSE, echo=FALSE}
 library(UsingR,ggplot2); data(galton)
 
-# Create data frame
+## Create data frame
 freqData <- data.frame(table(galton$child, galton$parent))
 names(freqData) <- c("child", "parent", "freq")  
 freqData <- freqData[freqData$freq > 0,] 
 
-# Convert factors to numeric
+## Convert factors to numeric
 freqData[] <- lapply(freqData, function(x) type.convert(as.character(x)))
 library(dplyr)
 freqData <- galton  %>%  group_by(parent, child) %>% summarise(freq = n())
-# Plot data
+## Plot data
 g <- ggplot(data=freqData, aes(x = parent, y = child))+ 
   scale_size(range = c(2,20), guide = 'none')  +
   geom_point(colour="grey50", aes(size=freq+20,show_guide=FALSE)) +
@@ -768,19 +807,19 @@ g
 ```
 
 
-# A subtle distinction 
+## A subtle distinction 
 
 - Recall the distinction between association and causation
 - Before graphing models like this was a few clicks, it made a lot of sense to summarise the count data using summary statistics. 
 
-# The Pearson correlation concept. 
+## The Pearson correlation concept. 
 
 - It measures the extent to which the scatter diagram is packed in around a line. 
 - If the sign is positive, the line slopes up. If the sign is negative, the line slopes down. 
 - We measure the coefficient ($\rho$) as the Covariance of X and Y divided by the variance of X times the variance of Y. This is for a population. 
 - Important distinction between *population* and *sample*. For a sample, you use a more complicated formula but the interpretation remains the same. In social science we work with the sample coefficient, $r$.
 
-# Have a look at these figures, what do you think the correlation is? 
+## Have a look at these figures, what do you think the correlation is? 
 
 ```{r, echo=FALSE}
 diffr1 <- function(n, rho, SDx = 1, SDy = 1) {
@@ -803,14 +842,14 @@ diffr(rho = 0, n = 50)
 diffr(rho = -0.80, n = 50)
 ```
 
-# Root Mean Square Error
+## Root Mean Square Error
 
 - If you use the line $y = a + b x$ to predict $x$ from $y$, the error or *residual* for subject $i$ is $e_{i} = y_{i} - a - b x_{i}$, and
 - The MSE is $\frac{1}{n}\sum_{i=1}^{n}e^{2}_{i}$.
 - Gauss: Among all lines, the regression line has the smallest mean square error. 
 
 
-# A regression model for Hooke's law.
+## A regression model for Hooke's law.
 
 A weight is hung on the end of a spring whose length under no load is $a$. The spring stretches to a new length. According to Hooke's law, the amount of stretch is proportional to the weight. If you hang weight $x_{i}$, on the spring, the length. 
 
@@ -820,7 +859,7 @@ A weight is hung on the end of a spring whose length under no load is $a$. The s
 - You choose $x_{i}$, the weight on occasion $i$. The response $Y_{i}$ is the length of the spring under the load. You do not see $a$, $b$, or $\epsilon_{i}$.
 
 
-# Objects for statistical modeling
+## Objects for statistical modeling
 
 You need 3 things to get a model working. Again, you'll typically want to use a model to predict, or account for, some variable. 
 
@@ -828,7 +867,7 @@ You need 3 things to get a model working. Again, you'll typically want to use a 
 * Data frames--a collection of variables. Each variable gets a column, this column gets a name. The rows are cases (sometimes called elements). 
 * Functions. These are the building blocks of models and produce the outputs of the models. You need formulas and data frames to make functions work effectively. 
 
-# Example: Wage/Salary relationships
+## Example: Wage/Salary relationships
 
 - Let's model the relationship between wage and experience.
 
@@ -840,7 +879,7 @@ or maybe
 
 --$WAGE = a + b*EXPERIENCE + c*EDUCATION + \epsilon$ 
 
-# Data look like this
+## Data look like this
 
 ```{r}
 head(CPS85)
@@ -848,21 +887,21 @@ head(CPS85)
 
 
 
-# Model: Fitting WAGE = intercept + b*EXPERIENCE + c* EDUCATION + error
+## Model: Fitting WAGE = intercept + b*EXPERIENCE + c* EDUCATION + error
 
 ```{r, echo=FALSE}
 lm0<-lm(wage~exper + educ, data=CPS85)
 lm1 <- lm(wage ~ exper + educ, data = CPS85)
 lm2 <-lm(wage ~ exper  + educ + age, data=CPS85)
-# The wage is the resonse variable. The lm function, which we'll explain in a second, takes inputs as explanatory variables from 'experience' and 'sector' variables, and produces an output. A simple way to think about this is that the response variable is to the left of the tilde, the explanatory variables are to the right of the tilde. 
-#stargazer(wagemodel, wagemodel1, wagemodel2, type='latex', style = "qje") # Let's spend some time looking at the individual coefficients and asking what they might mean. 
+## The wage is the resonse variable. The lm function, which we'll explain in a second, takes inputs as explanatory variables from 'experience' and 'sector' variables, and produces an output. A simple way to think about this is that the response variable is to the left of the tilde, the explanatory variables are to the right of the tilde. 
+##stargazer(wagemodel, wagemodel1, wagemodel2, type='latex', style = "qje") ## Let's spend some time looking at the individual coefficients and asking what they might mean. 
 mtable123 <- mtable("Model 1"=lm0,"Model 2"=lm1,"Model 3"=lm2,
     summary.stats=c("R-squared", "N"))
 pander(mtable123)
 ```
 
 
-# Thinking about interpreting the formula
+## Thinking about interpreting the formula
 
 The formula is a bit like a sentence. EG WAGE ~ SECTOR is equivalent to 
 
@@ -874,7 +913,7 @@ The formula is a bit like a sentence. EG WAGE ~ SECTOR is equivalent to
 6. WAGE broken down by SECTOR
 
 
-# Conclusion 
+## Conclusion 
 
 - Understanding correlation
 - Why are variables correlated
@@ -884,4 +923,553 @@ The formula is a bit like a sentence. EG WAGE ~ SECTOR is equivalent to
 
 Loads of ways to think about why you'd like to be able to do applied economic analysis
 
-# Lecture 3. 
+
+
+## Lecture 3 
+
+
+## Last time
+
+- Correlation and association 
+- Remember: r measures linear association, not association in general.
+- Best fitting line
+- Interpreting OLS estimates
+- Measuring the fit of a regression model 
+
+## This time 
+
+- Nonlinearity in Regression 
+- Factors affecting $\beta$
+- Calculating confidence intervals for $\beta$
+- Example: regression by hand, roll your own betas using R.
+- Readings: Koop cht 4 & Freedman cht 3
+
+
+## EC4004 Galton
+
+You have a factor. You can convert it to a character vector, split on the foot and inch symbols, and then use sapply to do the conversion in an anonymous function.
+
+```{r}
+library(dplyr)
+df<-read_csv("classpearson.csv") # Import the data
+height<-sapply(strsplit(as.character(df$Height),"'|\""),
+        function(x){12*as.numeric(x[1]) + as.numeric(x[2])}) # Separate out feet, multiply by 12, add to inches. 
+fheight<-sapply(strsplit(as.character(df$Fheight),"'|\""), #This could be wrapped as a for loop.
+        function(x){12*as.numeric(x[1]) + as.numeric(x[2])})
+mheight<-sapply(strsplit(as.character(df$Mheight),"'|\""),
+        function(x){12*as.numeric(x[1]) + as.numeric(x[2])})
+df<-data.frame(df$Gender, height, fheight, mheight)
+plot(fheight, height, main="EC4004 Student's Heights Vs Their Father's heights")
+```
+
+
+## Concept of regression 
+
+- You think there's some relation between $X$ and $Y$ like $Y = \alpha + \beta X$. X is the independent variable, Y is the dependent variable, $\alpha, \beta$ are coefficients. 
+- It is common to implicitly assume that the explanatory variable “causes” Y, and the coefficient $\beta$ somehow measures the influence of X on Y. 
+- Humility is vital here. The linear regression model will always be only an approximation of the true relationship
+- The data might be totally crap, introducing model error everywhere.  
+- In economics, the most probable source of error is due to missing vari- ables, usually because we cannot observe them.
+
+
+## The Econometric Approach
+
+- An economic **model** describes behavior of economic **variables** when world is governed by a specific structure, described by a set of **parameters**
+    - Parameters allow us to find causal effects.
+- Goal is to use data to learn parameters.
+- Separate into steps
+    - **Identification**: Supposing we know exactly how certain variables behave, what would we then know about parameters 
+    - **Estimation**: Find some function of the data that tells us about parameters
+    - **Inference**: What values of parameters (if any) are plausibly consistent with the data? 
+    
+## Example: US Employment Data. How would you model this? 
+
+```{r, echo=FALSE}
+df <- bls_api(c("LNS12000000", "LNS13000000", "LNS14000000"),
+              startyear = 2000, endyear = 2017) %>%
+    # Add time-series dates
+    dateCast()
+# Plot employment level
+library(ggplot2)
+gg1200 <- subset(df, seriesID=="LNS12000000")
+library(ggplot2)
+ggplot(gg1200, aes(x=date, y=value)) +
+    geom_line() +
+    labs(title = "Employment Level - US Civ. Labour Force")
+```
+
+## What about this? How would you model this? 
+
+```{r, echo=FALSE}
+df <- bls_api(c("LNS12000000", "LNS13000000", "LNS14000000"),
+              startyear = 2008, endyear = 2017) %>%
+    # Add time-series dates
+    dateCast()
+# Plot employment level
+library(ggplot2)
+gg1200 <- subset(df, seriesID=="LNS12000000")
+library(ggplot2)
+ggplot(gg1200, aes(x=date, y=value)) +
+    geom_line() +
+    labs(title = "Employment Level - US Civ. Labour Force")
+```
+
+
+
+## We could look at wage/education data as before, this time fitting a line to a cloud of points. 
+
+```{r, echo=FALSE}
+# Obtain access to data sets used in our textbook
+library(foreign) # Import data set of education and wages
+wage1<-read.dta("http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
+# Regress log wage on years of education 
+wageregoutput <- lm(formula = lwage ~ educ, data = wage1)
+# Scatter plot with regression line
+plot(wage1$educ,wage1$lwage, xlab = "Years of Education",
+      ylab = "Log Wage", main = "Wage vs Education")
+abline(wageregoutput)
+```
+ 
+## Regression results--what do they mean?
+
+```{r}
+wageregoutput <- lm(formula = lwage ~ educ, data = wage1)
+wageregoutput$coef
+```
+## From Koop: Deforestation vs Population Density
+```{r, echo=FALSE}
+forest <- read_excel("~/Dropbox/EC4044/Koop_Datasets/datasets_XLS/FOREST.XLS")
+ggplot(data=forest)+aes(x=`Forest loss`, y = `Pop dens`)+geom_smooth(method = lm)
+
+```
+
+## Regression results: how would you interpret these?
+
+```{r}
+forestreg <-lm(forest$`Forest loss`~ forest$`Pop dens`, data=forest)
+pander(forestreg$coef)
+```
+
+## Interpreting $\beta$ and $\hat{\beta}$
+
+- This coefficient is the slope of the best fitting straight line through the XY-plot. Mathematically $\beta = dY/dX$.
+- $\hat{\beta}$ interpreted as the marginal effect of X on Y and is a measure of how much $X$ influences $Y$.
+- In the deforestation/population density example, $\hat{\beta}$ was positive (0.000842), so Population Density and Deforestation are positively correlated. 
+- We can interpret $\beta$ as a measure of how much $Y$ tends to change when $X$ is changed by one unit.
+- See [this post](https://www.r-bloggers.com/linear-regression-from-scratch-in-r/) on a way to create regressions from scratch in R. 
+
+## Interpreting $\beta$ and $\hat{\beta}$
+
+- In the deforestation/population density example we obtained $\hat{\beta}=(0.000842)$. This is a measure of how much deforestation tends to change when population density changes by a small amount. 
+- Since population density is measured in terms of the number of people per 1,000 hectares and deforestation as the percentage forest loss per year, this figure implies that if we add one more person per 1,000 hectares (i.e. a change of one unit in the explanatory variable) defor- estation will \textcolor{red}{tend} to increase by 0.000842%.
+- Important: regressions measure tendencies in the data. 
+
+## Regression as statistical model
+- You can run OLS on any data set. 
+- Under some quite strict assumptions (Koop, chapter 4) it tells us true features of the population
+1. In population, $y=\beta_0+\beta_{1}x+u$
+2. ${(x_i,y_i):i=1 \ldots n}$ are independent random sample of observations following 1
+3. ${x_i : i=1 \ldots n}$ are not all identical
+4. $E(u|x)=0$
+5. $Var(u|x)=\sigma^2$ a constant $>0$
+
+## Regression properties BLUE
+
+- Under above assumptions, OLS estimator is 
+1. Consistent: $Pr(|\hat{\beta_1}-\beta_1|>e)\rightarrow 0$ as $n\rightarrow\infty$ for any $e>0$
+2. Unbiased: $E(\hat{\beta_1})=\beta_1$
+3. Asymptotically normal $$Pr(\frac{\sqrt{n}(\hat{\beta_1}-\beta_1)}{\sqrt{\frac{\sigma^2} {\sum_{i=1}^{n}(x_i-\bar{x})^2}}}<t)\rightarrow Pr(Z<t)$$ for any $t$, where $Z \sim N(0,1)$ 
+- (In practice can replace $\sigma^2$ by $\frac{1}{n-2} \sum (y_i-\hat{\beta_0}-\hat{\beta_{1}}x_i)^2$ )
+
+## Interpretation requires humility/skepticism! 
+
+- Even when assumptions are satisfied, causal question \textcolor{red}{not} answered by above results
+- Using the education example, how much would wages change if I stayed in school one more year?
+- Maybe education raises wages, or vice versa, or both related to some third factor
+- Regression alone won't tell us this 
+- In practice, above assumptions often dubious even as statistical descriptions
+- More powerful statistical methods which better describe relationship can help, but still don't answer causal question.
+
+## Test yourself: An exercise with Rstudio
+
+- Get the Forest.XLS data from SULIS. Import it into RStudio. 
+- Run a regression of deforestation on population density and interpret the results--just the coefficients. The significance tests etc we'll look at later. 
+- Run a regression of deforestation on change in cropland and one of deforestation on change in pasture land. and interpret the results.
+- Create a new variable, V, by dividing population density by 100. What are the units in terms
+of which V is measured?
+- Run a regression of deforestation on V. Compare your results to those for the first regression. 
+
+## Measuring the 'fit' of a regression 
+
+- We've already seen $\rho$ and $r$. Now we need to think about $r^{2}$.
+- Regression finds the “best fitting” line in the sense that it minimizes the sum of squared errors. 
+- Sometime the "best fit" is totally rubbish. How can you tell? 
+- The most common measure of fit is referred to as the $R^2$. It relates closely to the correlation between Y and X.
+- In fact, for the simple regression model, it is the  the sample correlation, squared.
+- Think about $R^2$ as: Variation we can explain/All the variation, or more formally Regression sum of squares / Total Sum of Squares.
+
+## Example
+
+```{r, eval=TRUE, echo=TRUE}
+forestreg <-lm(forest$`Forest loss`~ forest$`Pop dens`, data=forest) # Run the simple model
+pander(summary(forestreg)) # Calls the entire summary command.
+```
+
+## Pulling some more detail out
+
+```{r, fig.width = 5, fig.height=3}
+coef(forestreg) #  weights that minimize the sum of the square of the errors. 
+plot(fitted(forestreg)) # These are the fitted values of the model. 
+pander(summary(forest$`Forest loss`-forestreg$fitted.values)) # Difference between what the model predicted and the actual value of forest loss.
+```
+
+## Back to Wages Example
+
+- what else might be related to wages aside from time spent in school?
+- Maybe people with different amounts of work experience also have different wages, at any given level of education
+- Regress y = log wage on $\mathbf{x}=$ (constant, years education, experience)
+
+## Multivariate regression code
+
+```{r, eval=FALSE}
+library(foreign)
+wage1<-read.dta(
+  "http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta") # Import data set of education and wages
+pander((wageregression2 <- lm(formula = 
+            lwage ~ educ + exper, data = wage1)))# Regress log wage on years of education 
+```
+
+## Multivariate regression code
+
+```{r, echo=FALSE}
+wage1<-read.dta(
+  "http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta") # Import data set
+pander((wageregression2 <- lm(formula = 
+                lwage ~ educ + exper, data = wage1)))    # Regress log wage on years of education + experience 
+```
+- At a given level of education, 1 year of experience is associated with 1% higher wages
+- At a given level of experience, 1 year of education is associated with 9.8% higher wages
+
+## Nonlinearities
+
+- OLS estimator is linear in $\beta$
+- But we can model nonlinear functions by allowing $\mathbf{x}$ (or $y$) to include nonlinear transformations of the data
+- For this reason, linearity assumption \textcolor{red}{not} as strong as it looks
+- Saw this already: use of log wage instead of wage in dollars
+- Multiple regression allows formulas like polynomials:
+    - $\beta_0+x_{i}\beta_{1}+x_{i}^{2}\beta_{2}+\ldots$
+- Let's see if this seems like a good idea in our wages case
+
+## Residual plot
+
+- Can see if difference of $y$ from predicted value $\mathbf{x}_{i}^{\prime}\hat{\beta}$ exhibits systematic patterns by comparing residuals to predictors
+```{r,eval=FALSE}
+plot(wage1$exper,wageregression2$residuals, 
+     ylab="Regression Residuals",
+     xlab="Years of Experience", main="Residual Plot")
+```
+
+## Residuals appear to be predictable from experience
+```{r,echo=FALSE}
+plot(wage1$exper,wageregression2$residuals, ylab="Regression Residuals",xlab="Years of Experience",main="Residual Plot")
+```
+
+## A nonlinear prediction
+- Given pattern in the residuals, this suggests we might get a more accurate prediction using a nonlinear function
+```{r}
+#Add a nonlinear transform of experience to x
+wage1$exper2<-(wage1$exper)^2
+#Run the augmented regression
+wageregression3 <- lm(formula = 
+        lwage ~ educ + exper + exper2, data = wage1)
+```
+
+## Output of Regression 
+
+```{r}
+pander(wageregression3 <- lm(formula = 
+        lwage ~ educ + exper + exper2, data = wage1))
+```
+
+
+## Check residuals again
+```{r, eval=FALSE}
+plot(wage1$exper,wageregression3$residuals, 
+     ylab="Augmented Regression Residuals",
+     xlab="Years of Experience",main="Residual Plot")
+```
+
+## Better now: no easily discernible pattern
+```{r, echo=FALSE}
+plot(wage1$exper,wageregression3$residuals, 
+     ylab="Augmented Regression Residuals",
+     xlab="Years of Experience",main="Residual Plot")
+```
+
+
+## Linear models 
+
+- If true relationship is linear in $\mathbf{x}$, $\hat{\beta}$ will uncover it 
+- What assumptions are needed for this to be true? It is very important to know these as in practice they get violated all the time. 
+
+1. In population, $y=\beta_0+\beta_{1}x_{1}+\beta_{2}x_{2}+\ldots+\beta_{k}x_{k}+u$
+2. ${(y_i,\mathbf{x}_i^\prime):i=1 \ldots n}$ are independent random sample of observations following 1
+3. There are no exact linear relationships among the variables $x_1 \ldots x_k$
+4. $E(u|\mathbf{x})=0$
+5. $Var(u|x)=\sigma^2$ a constant $>0$
+- Sometimes people replace (4) by slightly weaker 
+- (4'): $E(u_{i}x_{ij})=0$ for $j=0\ldots k$
+- or add
+6. $u \sim N(0,\sigma^2)$
+
+## Estimator Properties
+
+- Under Assumptions (1-3) and (4')
+    - OLS is \textcolor{red}{consistent}: $Pr(\Vert\hat{\beta}-\beta\Vert>e)\rightarrow 0$ for all $e>0$
+- Under Assumptions (1-4)    
+    - OLS is \textcolor{red}{unbiased}: $E(\hat{\beta})=\beta$
+- Under (1-5), we can derive the sample variance of $\hat{\beta}$ and show its *efficiency* 
+- Gauss-Markov theorem: Under (1-5), any estimator of $\beta$ which is unbiased and linear in y has sample variance at least as large as that of $\hat{\beta}$
+- Additionally, (1-5) imply $\hat{\beta}$ is \textcolor{red}{asymptotically normal}.
+
+
+## Variance and Asymptotic Distribution
+
+- A tedious proof shows under (1-5)
+$$Var(\hat{\beta}|\mathbf{x})=\sigma^{2}(\sum_{i=1}^{n}\mathbf{x}_{i}\mathbf{x}_{i}^\prime)^{-1}$$
+- Under (1-5) a (not so easy) argument via the central limit theorem shows
+$$\sqrt{n}(\hat{\beta}-\beta)\overset{d}{\rightarrow} N(0,\Sigma)$$
+where $\Sigma:=\sigma^{2}E(\mathbf{x}_{i}\mathbf{x}_i^\prime)^{-1}$
+- This result is what lets us build confidence intervals and tests
+
+## Inference: single parameter
+
+- For any one $\beta_j$, the distribution is approximately normal 
+- We can estimate $\Sigma$ by $\hat{\Sigma}=\frac{1}{n-k-1}\sum_{i=1}^{n}\hat{u}_i^{2}(\frac{1}{n}\sum_{i=1}^{n}(\mathbf{x}_{i}\mathbf{x}_i^\prime))^{-1}$ where $\hat{u}_i$ is the sample residual
+- Level $1-\alpha$ confidence interval for $\beta_j$ is then $$(\hat{\beta}_j-\frac{z_{1-\alpha/2}}{\sqrt{n}}\hat{\Sigma}_{jj}^{\frac{1}{2}},\hat{\beta}_j+\frac{z_{1-\alpha/2}}{\sqrt{n}}\hat{\Sigma}_{jj}^{\frac{1}{2}})$$
+where $z_{1-\alpha/2}$ satisfies $Pr(Z<z_{1-\alpha/2})=1-\alpha/2$ when $Z\sim N(0,1)$
+- Common to use quantile of $t_{n-k-1}$ distribution instead, which is exact under (6)
+- Doesn't hurt to do this even if (6) false, since for large n approximately the same, and normality is large n approximation anyway
+
+## Inference: multiple parameters
+
+- Often want to test hypotheses about multiple coefficients
+    - e.g. $H_0$: $\beta_1=\beta_2=0$, $H_1$: $\beta_1 \neq 0$ or $\beta_2 \neq 0$
+- F test: run regression without restrictions, then run with restriction
+$$F=\frac{(\sum_{i=1}^{n}\hat{u}_{i,\text{restricted}}^2- \sum_{i=1}^{n}\hat{u}_{i,\text{unrestricted}}^2)/q}{\sum_{i=1}^{n}\hat{u}_{i,\text{unrestricted}}^2/n-k-1}$$
+    - k is number of included variables in unrestricted regression
+    - q is number of restrictions (count equal signs in $H_0$)
+- Under (1-5) and $H_0$, $F\overset{d}{\rightarrow}\chi^2_q$ asymptotically
+- Under (1-\textcolor{red}{6}) and $H_0$, $F\sim F_{q,n-k-1}$ in finite samples
+    - Again, doesn't hurt to use this as approximation
+
+## Automatic tests
+
+- t tests of univariate hypothesis $\beta_j=0$ produced automatically by summary command
+- Similarly F test of $\beta_j=0$ for all $j=1 \ldots k$ is produced
+
+```{r, eval=FALSE}
+summary(wageregression3)
+```
+
+## Output
+
+```{r}
+pander(summary(wageregression3))
+```
+
+## Does experience matter?
+- Running tests other than the standard ones requires more work
+- Suppose we want to know if experience helps predict wage
+- Because we include experience and its square, relevant null hypothesis is $\beta_2=\beta_3=0$
+
+```{r, eval=FALSE,echo=FALSE}
+library(car) #A library for performing tests
+#Library requires R 3.25 or higher, doesn't run on my version of OS X
+#F test that coefficients on experience and experience^2 both 0 
+linearHypothesis(wageregression3,c("exper = 0","exper2 = 0"))
+```
+
+## Running the test manually
+
+```{r}
+#Run restricted regression
+restrictedreg<-lm(formula = lwage ~ educ, data = wage1)
+#Restricted residual sum of squares
+RSS_r<-sum((restrictedreg$residuals)^2)
+#Unrestricted residual sum of squares
+RSS_u<-sum((wageregression3$residuals)^2)
+#Difference in degrees of freedom
+q<-restrictedreg$df-wageregression3$df 
+#Formula
+(Fstat<-((RSS_r-RSS_u)/q)/(RSS_u/wageregression3$df))
+#p value: reject H0 if small
+(pvalue<-1-pf(Fstat,q,wageregression3$df))
+```
+
+## Variable choice
+
+- In practice, which regressors *should* we include? 
+- Depends on goal of regression
+- If prediction, whatever set yields least error (may not be set leading to least error in sample, due to sampling variability)
+- If structure, we want to know particular $\beta_j$ in context of a model including some "true" set
+- Regardless of "truth," can always ask what is difference between estimates when a variable is or is not included
+
+## Omitted variables formula
+
+- Consider regression of $y$ on $x_0,x_1,\ldots,x_k$ to get estimate $\hat{\beta}$ 
+- What are results if we instead regress $y$ on $x_0,x_1,\ldots,x_{k-1}$ to get $\tilde{\beta}$, omitting $x_k$
+- Maybe because we don't observe $x_k$ in our data set
+- Let $\tilde{\delta}_j$, $j=0\ldots k-1$ denote the coefficients in a regression of $x_k$ on $x_0,x_1,\ldots,x_{k-1}$
+- Then we can write $\tilde{\beta}_j$ as $$\tilde{\beta}_j=\hat{\beta}_j+\hat{\beta}_{k}\tilde{\delta}_{j}$$
+- In words, if a variable is omitted, the coefficients in the "short" regression equal the coefficient in the long regression plus the effect of the omitted variable on the outcome times the partial effect of the omitted variable on the included regressor
+- Difference disappears if either excluded regressor had 0 partial correlation with the included regressor or had no partial correlation with the outcome
+
+## Bias?
+
+- If (1-3) and (4') hold the long regression, they also hold in the short regression, for different values of $\beta$, and so both are consistent for some linear function
+- If we have reason to be interested in the linear function corresponding to the long regression, omitted variables mean that we will not get a valid estimator if we are missing some variable and it is linked to the outcome and to the regressor of interest
+- Under (1-4) for the long regression, obtain $E(\tilde{\beta}_j|\mathbf{x})=\beta_j+\beta_{k}\tilde{\delta}_{j}$ and so this is called "omitted variables bias". Remember Yule's poverty regression? 
+
+
+## Example: experience again
+
+```{r}
+#Construct short regression coefficient from formula
+deltareg<-lm(formula = exper ~ educ, data = wage1)
+delta1<-deltareg$coefficients[2]
+betahat1<-wageregression2$coefficients[2] 
+betahat2<-wageregression2$coefficients[3] 
+(omittedformula<-betahat1+betahat2*delta1)
+#Run short regression without experience directly
+wageregression1<-lm(formula = lwage ~ educ, data = wage1)
+(betatilde1<-wageregression1$coefficients[2])
+```
+
+## Interpretation
+
+- Omitting experience from the wage regression reduces estimated effect of education on wages
+- Reason: people who spend more time in school have less work experience, and work experience is positively associated with wages
+- If we want to compare wages of people with similar levels of work experience and different education levels, we get larger differences than if experience not kept constant
+- Not clear at all that this is the comparison we want to make
+    - If you decide to spend one more year in school rather than working, you will have one more year of education, but will have less work experience than if you hadn't decided to stay in school
+    - Much more on this idea next week
+
+## More on (3): Multicollinearity 
+- Finding a single $\hat{\beta}$ requires that system have a unique solution
+- This fails if any regressor can be written as linear combination of some other subset of regressors
+- E.g. $x_{1i}=a*x_{2i}+b*x_{3i}$ for all $i$
+- Then if $(\beta_{1},\beta_{2},\beta_{3})$ solve the minimization problem, so does $(\beta_1+c,\beta_2-c*a,\beta_3-c*b)$ for any $c$
+
+## Interpreting multicollinearity
+- Information in variables is redundant
+    - Usually happens if one variable is *defined* in terms of another
+    - E.g. $x_1=1\text{\{A is true\}}$, $x_2=1\text{\{A is false\}}$
+    - Logically, always have $x_1=1, x_2=0$ or $x_1=0, x_2=1$
+    - Not even sensible to ask what would happen if A is both true and false or neither
+- First example of *failure of identification*
+- Is it a problem?
+    - Maybe not: Predicted value $\mathbf{x}_{i}^{\prime}\hat{\beta}$ the same no matter which solution chosen
+    - Maybe yes: if we want to predict what would happen if $\mathbf{x}$ took on a value not along the combination and this is sensible to ask, we simply have a data set which can't tell us the answer: need better data
+    
+## Handling multicollinearity in practice
+
+- Let's see how software handles it
+```{r, eval=FALSE}
+#Initialize random number generator
+set.seed(42)
+#Draw 100 standard normal random variables
+xa<-rnorm(100) 
+xb<-rnorm(100) #Draw 100 more
+#Define 3rd variable as linear combination of first 2
+xc<-3*xa-2*xb  
+#define y as linear function in all variables + noise
+y<-1*xa+2*xb+3*xc+rnorm(100) 
+#Regress y on our 3 redundant variables
+(multireg <-lm(y~xa+xb+xc)) 
+```
+
+## Output
+```{r, echo=FALSE}
+#Initialize random number generator
+set.seed(42)
+#Draw 100 standard normal random variables
+xa<-rnorm(100) 
+xb<-rnorm(100) #Draw 100 more
+#Define 3rd variable as linear combination of first 2
+xc<-3*xa-2*xb  
+#define y as linear function in all variables + noise
+y<-1*xa+2*xb+3*xc+rnorm(100) 
+#Regress y on our 3 redundant variables
+(multireg <-lm(y~xa+xb+xc)) 
+```
+- We see R simply drops one variable 
+    - Coefficient set to 0
+- In this case the last: choice is arbitrary
+- Can always do this: pick one element of identified set
+- Sometimes this is reasonable, sometimes not
+
+## Ways to derive OLS
+- Why did we choose OLS rather than some other estimator to learn from data?
+- 3 ways to derive OLS
+
+1. Empirical Risk Minimization
+2. Method of Moments
+3. Maximum Likelihood Estimation
+
+
+## Interpretations of OLS, 1: Empirical risk minimizer
+
+- Suppose our goal is prediction of $y$ using $\mathbf{x}$
+- Suppose we believe a good prediction is one that on average is close to y
+- Pick a predictor that minimizes this loss in sample
+- If law of large numbers holds, and cases we want to predict drawn from same distribution, in sample loss at a given predictor should be similar to out of sample loss
+- Takes more work (and assumptions) to show smallest in sample loss also good out of sample, but idea often works 
+   
+## Interpretations of OLS, 2: Method of moments  
+   
+- Now suppose we are willing to make some assumptions about distribution
+- Assume (1) and (4')
+- Method of moments: replace expectation with sample average 
+- Here gives exactly the first order conditions defining the estimator
+- Under (1-3) and (4'), OLS is estimator that satisfies given moment conditions
+- Assumes linearity, but only weak conditions on residual
+
+## Interpretations of OLS, 3: Maximum likelihood estimator 
+
+- MLE idea: estimate distribution by finding parameter values under which the probability density of observing the data set that was actually observed was highest
+- Suppose we think $z_i,\ i=1 \ldots n$ drawn i.i.d. from density $f(z,\theta)$ with unknown parameter $\theta$
+- MLE solves $$\hat{\theta}_{\text{MLE}}=\underset{\theta}{\arg\max}\Pi_{i}^{n}f(z,\theta) $$
+- Will see more about MLE later in the class: has very nice properties if we believe our model of the density
+
+## MLE view
+- Suppose $y_i-\mathbf{x}_i^\prime\beta\stackrel{\text{i.i.d}}{\sim}N(0,\sigma^2)$ for some $(\beta,\sigma^2)$
+- Then OLS estimator of $\beta$ coincides with maximum likelihood estimator
+- Tells us that, at least under strong assumptions, OLS should be good estimator
+
+## Next time
+
+- Explaining variance in multiple regression 
+- Statistical aspects
+- Interpreting multiple regression 
+- Biases: multicollinearity/heteroskedasticity/autocorrelation 
+- Example: education spending and educational attainment
+
+
+## Lecture 4
+
+## Last time
+
+- Nonlinearity in Regression 
+- Factors affecting $\beta$
+- Calculating confidence intervals for $\beta$
+- Example: regression by hand, roll your own betas using R.
+- Readings: Koop cht 4 & Freedman cht 3
+
+## This time
+
+- Explaining variance in multiple regression 
+- Statistical aspects
+- Interpreting multiple regression 
+- Biases: multicollinearity/heteroskedasticity/autocorrelation 
+- Example: education spending and educational attainment
