@@ -7,11 +7,13 @@ output:
     fig_caption: yes
 ---
 ```{r setup, include=FALSE, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+
 knitr::opts_chunk$set(
 	message = FALSE,
 	warning = FALSE,
 	cache = TRUE
 )
+
 ##install.packages("mosaicData") 
 library(mosaicData)
 ##install.packages("haven") 
@@ -34,7 +36,12 @@ library(fivethirtyeight)
 #install.packages('blscrapeR')
 library(blscrapeR)
 library(reshape2)
+
+
 ```
+
+
+
 
 ## Introduction 
 
@@ -50,8 +57,8 @@ library(reshape2)
 ## Welcome to this module
 
 * This is a *brand new* module, EC4044. 
-* This is the first time it has been taught. So please, bear with me. 
-* Slides will be added to this master version as I get the chance to build them out. 
+* This is the first time it has been taught. So please, bear with me. It's all under construction. 
+* Slides will be added to this master version as I get the chance to build them out, shared as both .rmd and .pdf.  
 * In addition to being a pedagogical experiment, this is also technical experiment. 
 * We'll be using some open-source tools, your feedback will be crucial as we develop the material. 
 
@@ -293,7 +300,11 @@ summary(REG)
 plot(predict(REG))
 plot(REG)
 ```
+
+
 ## Example
+
+
 ```{r}
 url<- "https://dl.dropboxusercontent.com/s/1hp05328ek2ws1e/dep.csv?dl=0"
 dep <- read_csv(url)
@@ -332,6 +343,7 @@ x= seq(from = 1, to = 20, by =1) ## This command generates the x variable.
 y = a + b*(x) ## This is the equation showing how y depends on x explicitly.
 plot(y) ## Plot y.
 ```
+
 ## Notation
 
 - Subscripts are used to denote different observations from a variable, so $W_{1}$
@@ -368,9 +380,11 @@ healtheg <- read_csv(url) ##Import the data
 df<-melt(healtheg, id="Year") ##Get the data in a format ggplot will like
 ggplot(data=df)+aes(x=Year, y = value, colour= variable, group=variable)+geom_line()+ggtitle("Health Spending Per Person, 1972 = 100" )+ylab("")+scale_x_discrete(breaks=pretty_breaks(n=10))
 ```
+
+
 ## Graphing proportional change over time
 
-```{r}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 health2 <- read_csv("https://dl.dropboxusercontent.com/s/1rm57rvk80ja2vm/health2.csv?dl=0")
 df<-melt(health2, id="Year")
 ggplot(data=df)+aes(x=Year, y = value, fill= variable, label= value)+geom_bar(stat='identity')+geom_text(size = 3, position = position_stack(vjust = 0.5))+ggtitle("Proportion spent on the Irish health service since 1994")+ylab("% of total")
@@ -384,12 +398,14 @@ ggplot(data=df)+aes(x=Year, y = value, fill= variable, label= value)+geom_bar(st
 3. Untangling multiple causal influences
 4. Assessing strength of evidence. 
 
+
 ## Example: does spending more on education improve outcomes? US Data
 
-```{r}
+```{r, echo=FALSE}
 x<-summary(SAT)
 pander(x)
 ```
+
 ## Looking at the data
 
 ```{r, message=FALSE, warning=FALSE, echo=FALSE}
@@ -406,10 +422,43 @@ The data are telling us spending more reduces your SAT score. Something is clear
 
 ## Looking graphically at the fraction of the population that take the SAT
 
-```{r}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(data=SAT)+ aes(x = perc, y = total, label = state) + geom_point() + geom_text(aes(label=state))+xlab("Fraction Taking the SAT")+ylab("SAT Score")
 ```
 
+
+
+## Different plots tell different stories. Example using financial data
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+##install.packages("tidyquant")
+library(tidyquant)
+library(gridExtra)
+AMZN <- tq_get("AMZN", get = "stock.prices", from = "2007-01-01", to = "2017-01-01")
+FANG <- c("FB", "AMZN", "NFLX", "GOOG") %>%
+    tq_get(get = "stock.prices", from = "2007-01-01", to = "2017-01-01")
+## Setup dates for zoom window
+end <- ymd("2017-01-01")
+start <- end - weeks(20)
+## Create chart
+a1<-AMZN %>%
+    ggplot(aes(x = date, y = close)) +
+    geom_line() + 
+    labs(title = "Amazon Line Chart",
+         subtitle = "This is good, but doesn't give us open, high, low, or direction information",
+         x = "", y = "Closing Price") +
+    coord_x_date(xlim = c(start, end),
+                 ylim = c(700, 870))
+a2<-AMZN %>%
+    ggplot(aes(x = date, y = close)) +
+    geom_candlestick(aes(open = open, close = close, high = high, low = low)) + 
+    labs(title = "Amazon stock price using Candlesticks",
+         subtitle = "Visually shows open, high, low, and close information, along with direction",
+         x = "", y = "Closing Price") +
+    coord_x_date(xlim = c(start, end),
+                 ylim = c(700, 870))
+grid.arrange(a1, a2, ncol=2)
+```
 
 ## A lot of the time we care about *causal* inferences
 
@@ -426,37 +475,8 @@ ggplot(data=SAT)+ aes(x = perc, y = total, label = state) + geom_point() + geom_
 - Typically economic data come from observational studies. You observe household consumption going up when disposable income goes up. 
 - Observational data are almost always confounded, meaning there's a difference between the *treatment* and *control* groups. This is because people choose to be in one group or another and you can't control that ex ante, and this affects the response. 
 
-```{r}
-##install.packages("tidyquant")
-library(tidyquant)
-AMZN <- tq_get("AMZN", get = "stock.prices", from = "2007-01-01", to = "2017-01-01")
-FANG <- c("FB", "AMZN", "NFLX", "GOOG") %>%
-    tq_get(get = "stock.prices", from = "2007-01-01", to = "2017-01-01")
-## Setup dates for zoom window
-end <- ymd("2017-01-01")
-start <- end - weeks(20)
-## Create chart
-AMZN %>%
-    ggplot(aes(x = date, y = close)) +
-    geom_line() + 
-    labs(title = "AMZN: Line Chart the Previous Way",
-         subtitle = "This is good, but doesn't give us open, high, low, or direction information",
-         x = "", y = "Closing Price") +
-    coord_x_date(xlim = c(start, end),
-                 ylim = c(700, 870))
-AMZN %>%
-    ggplot(aes(x = date, y = close)) +
-    geom_candlestick(aes(open = open, close = close, high = high, low = low)) + 
-    labs(title = "AMZN: New Candlestick Geom!",
-         subtitle = "Visually shows open, high, low, and close information, along with direction",
-         x = "", y = "Closing Price") +
-    coord_x_date(xlim = c(start, end),
-                 ylim = c(700, 870))
 
-```
-
-
-## Example from Freedman
+## Example from Freedman, Statistical Modeling
 
 > for school children, shoe size is strongly correlated with reading skills. However, learning new words does not make the feet get bigger. Instead, there is a third factor involved - age. As children get older, they learn to read better and they outgrow their shoes. (According to statistical jargon (…), age is a confounder.) In the example, the confounder was easy to spot. Often, this is not so easy. And the arithmetic of the correlation coefficient does not protect you against third factors.”
 
@@ -905,7 +925,7 @@ pander(mtable123)
 
 The formula is a bit like a sentence. EG WAGE ~ SECTOR is equivalent to 
 
-1. WAGE as a fucntion of SECTOR
+1. WAGE as a function of SECTOR
 2. WAGE accounted for by SECTOR
 3. WAGE modeled by SECTOR
 4. WAGE explained by SECTOR
@@ -945,11 +965,11 @@ Loads of ways to think about why you'd like to be able to do applied economic an
 - Readings: Koop cht 4 & Freedman cht 3
 
 
-## EC4004 Galton
+## EC4044 Galton
 
 You have a factor. You can convert it to a character vector, split on the foot and inch symbols, and then use sapply to do the conversion in an anonymous function.
 
-```{r}
+```{r, echo=FALSE}
 library(dplyr)
 df<-read_csv("classpearson.csv") # Import the data
 height<-sapply(strsplit(as.character(df$Height),"'|\""),
@@ -959,7 +979,7 @@ fheight<-sapply(strsplit(as.character(df$Fheight),"'|\""), #This could be wrappe
 mheight<-sapply(strsplit(as.character(df$Mheight),"'|\""),
         function(x){12*as.numeric(x[1]) + as.numeric(x[2])})
 df<-data.frame(df$Gender, height, fheight, mheight)
-plot(fheight, height, main="EC4004 Student's Heights Vs Their Father's heights")
+ggplot(data=df)+aes(x=fheight, y = height)+geom_point()+ggtitle("EC4044 Student's Heights Vs Their Father's heights, inches")
 ```
 
 
@@ -1265,8 +1285,8 @@ $$F=\frac{(\sum_{i=1}^{n}\hat{u}_{i,\text{restricted}}^2- \sum_{i=1}^{n}\hat{u}_
 
 ## Automatic tests
 
-- t tests of univariate hypothesis $\beta_j=0$ produced automatically by summary command
-- Similarly F test of $\beta_j=0$ for all $j=1 \ldots k$ is produced
+- t tests of univariate hypothesis $\beta_j=0$ produced automatically by Summary() command. t-tests determine if two sets of data are significantly different from each other.
+- Similarly F test of $\beta_j=0$ for all $j=1 \ldots k$ is produced. F-test used when comparing statistical models that have been fitted to a data set, in order to identify the model that best fits the population from which the data were sampled.
 
 ```{r, eval=FALSE}
 summary(wageregression3)
@@ -1473,3 +1493,1593 @@ y<-1*xa+2*xb+3*xc+rnorm(100)
 - Interpreting multiple regression 
 - Biases: multicollinearity/heteroskedasticity/autocorrelation 
 - Example: education spending and educational attainment
+
+## Digression on project
+
+![Source: Wickham, 2016](data-science.png)
+
+## Submit a .RMD file
+
+- You'll be given 2 *default* datasets, so we'll sort the 'tidy' element for you. You can also find your own.
+- You do the rest. We want to see you transforming, visualising, modeling and communicating the data. 
+- Submit a 1 page outline of your project to Niall in week 7/8, meet with him to go through the project outline and make sure it is do-able in the time you have available. 
+
+## Outline
+
+- Background to the data
+- Visualisation/Transformation 
+- Modeling
+- Conclusion
+- References, etc. 
+
+## Multiple regression 
+
+- You've seen something like WAGE ~ EDUCATION
+- This exists as a relation like WAGE = a + b*EDUCATION + error.
+- As code it exists as reg <- lm(Wage ~ EDUCATION, data = somedataset)
+- This will pump out values for a and b, as well as giving you some sense of the error, residual, standard errors, etc, and you can then run various tests. 
+- We do need to think carefully about 'multiple' explanatory variables. This is multiple regression.
+
+## Digression: Matrices (freedman, chapter 4)
+
+- Matrix, from 'mother'. Essentially a container that you can manipulate, and while doing so, manipulate the elements of that matrix. 
+
+- Express 'size' as *m* rows by *n* columns, normally written $n \times n$.
+- Multiply through matrices, add, subtract, and divide by scalars
+easily.
+- Multiply by other matrices easily too. 
+- Here we have two matrices, **A** and **B**, multiplying one another. 
+
+$$
+\left(\begin{array}{cc} 
+0.8944272 & 0.4472136\\
+-0.4472136 & -0.8944272
+\end{array}\right)
+\left(\begin{array}{cc} 
+10 & 0\\ 
+0 & 5
+\end{array}\right)
+$$ 
+
+## Matrices
+
+An $m \times n$ matrix $A$ can be multiplied by a matrix $B$ of sign $n \times P$. This gives a matrix $n \times p$ in shape. 
+
+- To get your head around the idea of matrices, do exercises for pages 30--40 of Freeman. 
+
+## Multiple regression
+
+The model in matrix form is 
+
+$$Y = \mathbf{X}\beta + \epsilon$$
+- Where Y, the dependent variable, is an n x 1 vector of observable random variables. $Y_{i}$ is the ith component of Y.
+- X is an $n \times p$ matrix of observable variables. It's often called the 'design matrix' or 'training matrix'. 
+- $\beta$ is an $n \times 1$ vector of parameters
+- $\epsilon$ is an $n \times 1$ random vector of errors or disturbances. 
+
+## Explaining variance in multiple regression 
+
+- after fitting to data, we get 
+
+$$Y = \mathbf{X}\hat{\beta} + e$$
+
+- The fraction of variance 'explained' by the regression is 
+
+$$R^{2} = var(\mathbf{X}\hat{\beta})/var(Y)$$
+- Problem: has wrong size and has wrong units. Another problem: there's a difficulty in understanding the idea. 
+
+
+## Geometric Intuition. Imagine you're a crow.
+
+- Sacramento is 78 miles from San Francisco (as the crow flies)
+- Or crow could fly 60 miles East and 50 miles North, passing Stockton. Pythagoras tells us the area of the triangle is 
+$$60^{2} + 50^{2} = 3600 + 2500 = 6100 \text{ miles}^{2}$$
+![](sacramento.png)
+
+
+## Ye wha? 
+
+- The analogy is: the area between SF and Sacramento is 6100 square miles, of which 3,600 is explained by 'East'. 
+- Projecting on East stands for projecting Y and X orthogonally to the vector u that is all 1's. 
+- And then projecting the remainder of Y onto what is left of the column space of X. 
+- The hypoteneuse of the triangle is $Y = \bar{Y}_{u}$, which squared in length is $n* var(\mathbf{X}\hat{\beta})$
+- The horizontal edge is $X\hat{\beta}- \bar{Y}u$
+- The vertical edge is e and $e^{2} = n*var(e)$
+- The theory of explained variance boils down to Pythagoras theorem and a crow. Very Rubberbandits all together. 
+- Anyway, a high $R^{2}$ is a measure of the goodnewss of fit between the data and the equation: the residuals relative to the standard deviation are small. A low $R^{2}$ indicates a poor fit. 
+
+## Caution (for like the 120th time)
+
+- $R^{2}$ measures goodness of fit, not validity of underlying causal model. 
+- Example: very strong correlation between inflation rate and lung cancer detection rate. But inflation doesn't cause or prevent cancer
+
+![See http://www.tylervigen.com/spurious-correlations for more](drown.png)
+
+## Application: Wages
+
+- Let's go back to our wages data set: what else might be related to wages aside from time spent in school?
+- Maybe people with different amounts of work experience also have different wages, at any given level of education
+- Regress y = log wage on $\mathbf{x}=$ (constant, years education, experience)
+
+## Multivariate regression code
+
+```{r, eval=FALSE}
+# Obtain access to data sets used in our textbook
+library(foreign) 
+# Import data set of education and wages
+wage1<-read.dta(
+  "http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
+# Regress log wage on years of education 
+(wageregression2 <- lm(formula = 
+            lwage ~ educ + exper, data = wage1))
+```
+
+## Multivariate regression code
+
+```{r, echo=FALSE}
+# Obtain access to data sets used in our textbook
+library(foreign) 
+# Import data set of education and wages
+wage1<-read.dta(
+  "http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
+# Regress log wage on years of education + experience 
+(wageregression2 <- lm(formula = 
+                lwage ~ educ + exper, data = wage1))
+```
+- At a given level of education, 1 year of experience is associated with 1% higher wages
+- At a given level of experience, 1 year of education is associated with 9.8% higher wages
+
+## Kahneman: Focusing Illusion 
+
+> "Nothing In Life Is As Important As You Think It Is, While You Are Thinking About It"
+
+Income is determined by:
+
+- Education BUT If everyone had the same education, the inequality of income would be reduced by less than 10%
+-  Income BUT If everyone had the same income, the differences among people in life satisfaction would be reduced by less than 5%
+
+## Kahneman: Focusing Illusion 
+
+Happiness is determined by:
+
+- Income BUT If everyone had the same income, the differences among people in life satisfaction would be reduced by less than 5%.
+- Inequality BUT  On average, individuals with high income are in a better mood than people with lower income, but the difference is about 1/3 as large as most people expect.
+-  The mismatch in the allocation of attention between thinking about a life condition and actually living it is the cause of the focusing illusion.
+
+## What happens to OLS if assumptions break down? 
+
+- if the assumptions are wrong, the estimator can be severely biased, or worse, the standard errors computed from the data can be \textcolor{red}{way} off. 
+
+## "Well-specified" linear models
+- Recall "standard" assumptions
+1. In population, $y=\beta_0+\beta_{1}x_{1}+\beta_{2}x_{2}+\ldots+\beta_{k}x_{k}+u$
+2. ${(y_i,\mathbf{x}_i^\prime):i=1 \ldots n}$ are independent random sample of observations following 1
+3. There are no exact linear relationships among the variables $x_1 \ldots x_k$
+4. $E(u|\mathbf{x})=0$
+5. $Var(u|x)=\sigma^2$ a constant $>0$
+- Sometimes people replace (4) by slightly weaker 
+- (4'): $E(u_{i}x_{ij})=0$ for $j=0\ldots k$
+- or add
+6. $u \sim N(0,\sigma^2)$
+
+## Conditional expectation functions
+- We call $E[y|\mathbf{x}]$ the conditional expectation function, c.e.f.
+- It gives average value of $y$ at any value of $\mathbf{x}$
+- The c.e.f. is not required to be linear
+- Under assumption (4), we have $E[y|\mathbf{x}]=\mathbf{x}^\prime\beta$
+    - Linear c.e.f.  
+- If we believe this, OLS is not just best linear predictor, but best of any predictor
+- Not entirely crazy to think this is reasonable if $\mathbf{x}$ chosen carefully
+
+
+## What we can say under different subsets
+- Properties of $\hat{\beta}$ from OLS under different assumptions
+- (1-6): finite sample $t$ and $F$ distributions
+- (1-5): asymptotic normal distributions, asymptotic efficiency (smallest asymptotic variance), finite sample efficiency (Gauss Markov: best linear unbiased estimator)
+- (1-4): unbiasedness
+- (1-3), (4'): consistency
+- (1-2), (4'): convergence to some (arbitrary) element of identified set
+
+
+
+## What does this look like?
+```{r,echo=FALSE}
+#Initialize random number generator
+set.seed(20)
+```
+```{r}
+#Generate some data from a nonlinear relationship
+x1<-rnorm(500,mean = 3, sd=5)
+trueerror<-rnorm(500) #Residual from true relationship
+#Not same as OLS residual
+#A nonlinear relationship: E[y|x]=2*sin(x)
+y1<-2*sin(x1)+trueerror 
+# Run a regression in which c.e.f. not linear in x
+#Include a polynomial terms to allow nonlinearity
+(misspecifiedregression<-lm(y1 ~ x1 + I(x1^2) + I(x1^3)))
+```
+
+## Plot prediction and c.e.f.
+```{r, eval=FALSE}
+#Generate x values at which to evaluate functions
+xinterval<-seq(from=min(x1),to = max(x1),length.out=1000)
+new<-data.frame(x1=xinterval)
+#Calculate $x'\hat{\beta}$ using predict command
+pred<-predict(misspecifiedregression,new)
+#plot Data, O.L.S. predictions, and c.e.f.
+plot(x1,y1, xlab = "x", ylab="y", 
+     main="Data, CEF, and OLS Predicted Values")
+points(xinterval,pred, col = "red") #OLS Predictions
+points(xinterval,2*sin(xinterval), col = "blue") #True CEF
+```
+
+## Plot prediction and c.e.f.
+```{r, echo=FALSE}
+#Generate x values at which to evaluate functions
+xinterval<-seq(from=min(x1),to = max(x1),length.out=1000)
+new<-data.frame(x1=xinterval)
+#Calculate $x'\hat{\beta}$ using predict command
+pred<-predict(misspecifiedregression,new)
+#plot Data, O.L.S. predictions, and c.e.f.
+plot(x1,y1, xlab = "x", ylab="y", 
+     main="Data, CEF, and OLS Predicted Values")
+points(xinterval,pred, col = "red") #OLS Predictions
+points(xinterval,2*sin(xinterval), col = "blue") #True CEF
+```
+
+## What to make of OLS
+- Clearly, doesn't do a great job of recovering a "wiggly" CEF
+    - Even with nonlinear terms
+- But, does an okay job on average over $\mathbf{x}$
+    - By construction, about as likely to be wrong above as to be wrong below
+- If this is our goal, or we truly believe c.e.f. not too wiggly, OLS maybe okay
+
+## Inference
+- Defining the OLS coefficients by (1-3), (4'), how do we do inference?
+- Possible to assess sampling variability in $\hat{\beta}$ around population best fit line
+- But we need to be able to say more about residuals
+
+## Heteroskedasticity
+- Inference was made under **Homoskedasticity**
+5. $Var(u|x)=\sigma^2$ a constant $>0$
+- Says dispersion of deviations from best fitting line is equal at all predictor values
+- Regardless of what you know, your prediction of $y$ given $\mathbf{x}$ is equally accurate on average
+- Often fails: 
+   - If population c.e.f. nonlinear, distribution around line will depend systematically on $\mathbf{x}$
+   - Even in truly linear case, where (4)
+ holds, variance can depend on $\mathbf{x}$
+    - This situation is called **heteroskedasticity** 
+ 
+## Data exhibiting heteroskedasticity
+```{r,echo=FALSE}
+#Initialize random number generator
+set.seed(32)
+```
+```{r, eval=FALSE}
+#Generate a data set
+x<-runif(1000, min=1, max=7)
+u<-rnorm(1000)*(4*x) #u is a function of x
+y<-1+4*x+u
+#Fit linear regression
+hetreg<-lm(y ~ x)
+#Plot points and OLS best fit line
+plot(x,y,xlab = "x", ylab = "y", 
+     main = "Heteroskedastic Relationship")
+abline(hetreg, col = "blue", lwd=2)
+```
+
+## Data exhibiting heteroskedasticity
+```{r, echo=FALSE}
+#Generate a data set
+x<-runif(1000, min=1, max=7)
+u<-rnorm(1000)*(4*x) #u is a function of x
+y<-1+4*x+u
+#Fit linear regression
+hetreg<-lm(y ~ x)
+#Plot points and OLS best fit line
+plot(x,y,xlab = "x", ylab = "y", 
+     main = "Heteroskedastic Relationship")
+abline(hetreg, col = "blue", lwd=2)
+```
+
+
+## Handling heteroskedasticity
+- Conditional distribution of y given x now varies
+- $Var(u|\mathbf{x}):=\sigma^2(\mathbf{x})$
+- Gauss Markov assumptions fail, OLS is not MLE
+- OLS no longer efficient
+- But method of moments interpretation still works
+- Two options:
+    - Stick with OLS, but do inference some other way
+    - Find a new estimator
+
+## Inference under heteroskedasticity
+- Finite sample properties of OLS will depend on form of relationship
+- Asymptotics for $\hat{\beta}$ still work fine
+- By CLT, get asymptotic normal distribution, with new variance formula that depends on $\sigma^2(\mathbf{x})$
+- Do we need to estimate $\sigma^2(\mathbf{x})$?
+    - Seems hard: don't know functional form
+    - Don't quite need it for asymptotics
+    
+
+## t-tests under heteroskedasticity
+- t-tests use same formula, but robust standard errors
+- Since justification is asymptotic, use Normal instead of t critical values
+```{r, eval=FALSE}
+library(sandwich)
+# Calculate heteroskedasticity-consistent (HC) estimate 
+Sigmahat<-vcovHC(hetreg,type="HC0")
+library(lmtest) #Implements tests
+# Test coefs using robust s.e.s & normal critical values 
+(robusttests<-coeftest(hetreg,df=Inf, vcov=Sigmahat))
+#Compare to tests using non-robust S.E.s
+sumhetreg<-summary(hetreg)
+(nonrobust<-sumhetreg$coefficients)
+```
+
+## Results: Robust
+```{r, echo=FALSE}
+suppressWarnings(suppressMessages(library(sandwich)))
+# Calculate heteroskedasticity-consistent (HC) estimate of standard errors
+Sigmahat<-vcovHC(hetreg,type="HC0")
+suppressWarnings(suppressMessages(library(lmtest))) #Implements tests
+# Test coefficients using normal critical values using robust errors
+(robusttests<-coeftest(hetreg,df=Inf, vcov=Sigmahat))
+```
+
+## Results: nonrobust
+```{r, echo=FALSE}
+#Compare to tests using on-robust S.E.s
+sumhetreg<-summary(hetreg)
+(nonrobust<-sumhetreg$coefficients)
+```
+
+## Testing multiple parameters
+- Usual formula for F test not valid under heteroskedasticity
+- Can use Wald test: $H_0: R\beta=r$, $R\beta\neq r$ for $R$ a $q\times k+1$ matrix consisting of $q$ linear combinations of coefficients
+- Under $H_0$, $\sqrt{n}(R\hat{\beta}-r)\sim N(0,R\Sigma R^{\prime})$
+- Test stat squares this and standardizes by variance  $n(R\hat{\beta}-r)^{\prime}(R\hat{\Sigma}R^{\prime})^{-1}(R\hat{\beta}-r)$
+- $\hat{\beta}$ from an unrestricted regression is used
+- Distribution is $\chi^2_q$ asymptotically
+- Can also implement using **waldtest()** command in **lmtest** library
+
+## Robust errors for returns to education
+```{r, eval=FALSE}
+library(foreign)
+wage1<-read.dta(
+  "http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
+wreg <- lm(formula = 
+        lwage ~ educ + exper + exper2, data = wage1)
+#Build robust standard error matrix: note, this command 
+#divides sandwich formula by n, to get s.e.s instead 
+#of asymptotic variance, so no "n" needed in Wald stat
+WhiteErrors<-vcovHC(wreg,type="HC0")
+# Null hypothesis sets b2, b3 to 0
+r1<-(c(0,0,1,0); r2<-c(0,0,0,1)
+R<-rbind(r1,r2) #Matrix of linear restrictions     
+# Test joint significance of experience terms
+Waldstat<-t(R%*%wreg$coef)
+      %*%solve(R%*%WhiteErrors%*%t(R))
+      %*%(R%*%wreg$coef) # Test Statistic
+pval<-1-pchisq(Waldstat,2) #P-value
+```
+
+## Robust errors for returns to education
+```{r, echo=FALSE}
+library(foreign)
+wage1<-read.dta(
+  "http://fmwww.bc.edu/ec-p/data/wooldridge/wage1.dta")
+wreg <- lm(formula = 
+        lwage ~ educ + exper + expersq, data = wage1)
+WhiteErrors<-vcovHC(wreg,type="HC0")
+# Null hypothesis sets b2, b3 to 0
+r1<-c(0,0,1,0)
+r2<-c(0,0,0,1)
+R<-rbind(r1,r2) #Matrix of linear restrictions     
+# Test joint significance of experience terms
+Waldstat<-t(R%*%wreg$coef)%*%solve(R%*%WhiteErrors%*%t(R))%*%(R%*%wreg$coef)
+print("Wald statistic value is ")
+print(Waldstat[1,1])
+# Test Statistic
+pval<-1-pchisq(Waldstat,2) #p-value
+print("p-value is ")
+print(pval[1,1])
+```
+
+
+## Generalized Least Squares
+- Can we come up with a better estimator than OLS?
+- If form of heteroskedasticity known, yes
+- Weight sum of squares by inverse of conditional variance, minimize weighted sum
+- Use **weight** option in **lm()**
+- Asymptotically more efficient (lower variance) than OLS
+- But when do you know form of heteroskedasticity? 
+    - Rarely: whole point is you don't have correct specification
+- If form not exactly known, can try to estimate a model
+- But may be wrong, and even if right, is noisy in finite samples
+- Empirical researchers rarely bother with GLS
+
+## Testing for heteroskedasticity
+- Don't bother
+- Screws up coverage of confidence intervals
+- Robust standard error formula works fine even if homoskedastic
+    - Most economists use it by default
+- Read about Breusch-Pagan LM test or White test online if you really want to test for it
+
+## Conclusions
+- OLS works fine for any data distribution
+    - So long as what you want to know is best linear fit to conditional expectation
+- In general, error terms will depend on $\mathbf{x}$    
+    - Includes misspecification and noise
+    - Inevitable in some situations: discrete outcomes
+- Inference for OLS still possible when homoskedasticity fails
+    - Use sandwich covariance matrix
+    - Replace F test with Wald test
+- Tests tell you about relationship between $y$ and $\mathbf{x}$: is there a linear relationship on average
+- Reminder: Conditional expectation is just another feature of joint distribution: whether it is what you want depends on structure and design
+
+## Lecture 5 
+
+- Autocorrelation and $AR(1)$ processes
+- Stationarity and Unit roots
+- Example: Prices
+- Example (gapminder): How does life expectancy change over time  for each country?
+
+
+## Last time we looked at multiple regression 
+
+- Notion that we can test multiple vectors against one another, one at a time, to discern the effects of several dependent variables on one another. 
+- Then we look at situations where the underlying assumptions break down--heteroskedasticity. 
+- This time it makes sense to look at situations where you have to model variables over time. 
+
+## Time series Review
+
+- Time series present another design for data
+    - Series $(Y_t,X_t)$ $t=1\ldots T$ of ordered observations
+- Serial correlation $Cov(Y_t,Y_{t+h})\neq 0$ makes usual inference difficult
+- But can also model serial correlation to describe properties of data
+- With strong exogeneity, can do regressions using time series data and rely on finite sample properties
+- If time series are weak dependent, have modified LLN and CLT
+- Use this to show consistency and asymptotic normality of regression with dependent data
+
+## Weakly Or Serially Dependent Data
+
+- When the future is "like" the past and historical events are like present ones, we can use past to learn about future
+- A time series $Y_t$ is stationary if $E[Y_t]=E[Y_{t+h}]$, $Cov(Y_t,Y_{t+h})$ depends only on $h$, not $t$
+- $Y_t$ is weakly dependent if $Cov(Y_t,Y_{t+h})\rightarrow 0$ as $h\rightarrow \infty$ and $\sum_{h=-\infty}^{\infty}|Cov(Y_t,Y_{t+h})|<\infty$
+- Can fail if future fundamentally different from past
+
+## Regression with dependent data
+
+- When $X_t$ and $u_t$ satisfy weak dependence, can obtain consistency, asymptotic normality for regression
+- **Strict exogeneity** $E[u_t|X_1\ldots X_T]=0\ \forall t$ can be weakened to 
+- **contemporaneous exogeneity** $E[u_t|X_t]=0 \forall t$
+- Or as far as $Cov(X_t,u_t)=0$
+- This permits $X_t$ to be related to $u_{t-1}$, for example
+- Allows case where $X_t=Y_{t-1}$: autoregression can be estimated by linear regression
+- Unbiasedness fails: usually have substantial bias in finite samples
+- If $u_t$ homoskedastic and has no serial correlation, asymptotic variance has standard formula
+- This can be true if $X_t$ contains all historical information relevant to predicting $Y_t$, possibly including lags of $Y_t$ and $X_t$
+- Otherwise, limit depends on long run variance
+
+## Time Series Regression: Assumptions
+
+- (TS.1') Linear Model $(X_t,Y_t)$ drawn from model $Y_t=X_t^{\prime}\beta+u_t$ and satisfy stationarity and weak dependence
+- (TS.2') No perfect multicollinearity of $X_t$
+- (TS.3') Contemporaneous exogeneity $E[u_t|X_t]=0 \forall t$
+- or (TS 3'') $Cov(X_t,u_t)=0$
+- (TS.4') Comtemporaneous homoskedasticity: $Var(u_t|X_t)=\sigma^2$ $\forall\ t$
+- (TS.5') No serial correlation $E[u_tu_s|X_t,X_s]=0$ $\forall\ t\neq s$
+
+## Time Series Regression: Results
+
+ - Under (TS.1'),(TS.2'),(TS.3'') (or (TS.3'), which implies (TS.3'')), have consistency: 
+$$\hat{\beta}\overset{p}{\rightarrow}\beta$$
+- Inference is exactly standard: t-statistics, Wald tests, CIs, etc
+- With serial correlation or heteroskedasticity, consistent but need robust standard errors
+
+## Example: Monetary Policy Reaction Function ("Taylor Rule")
+
+- Fed or ECB sets monetary policy by changing Fed Funds Rate $r_t$
+- Want to know how Fed responds to macroeconomic variables
+- Suggested that good description is that Fed responds to inflation $inf_t$ and output gap (measure of difference in GDP from "potential" level) $gap_t$
+- $r_t$ evolves more slowly than inflation or output, so current value also predictable from past: $r_{t-1}$
+- Regression equation for reaction function is 
+$$r_t=\beta_0+\beta_1 r_{t-1} + \beta_2 inf_t + \beta_3 gap_t + u_t$$
+- Run regression using data from **FRED**: macroeconomic database for US
+```{r, echo=FALSE}
+#Library to download data
+library(pdfetch)
+#Download quarterly series from FRED
+gdppot<-pdfetch_FRED("GDPPOT") # Potential GDP
+fefr<-read.csv("FEDFUNDS.csv") # Downloaded quarterly fed funds rate to file in directory: need this file to compile
+ffr<-ts(fefr[,2],start=c(1954,3),frequency=4)
+Lffr<-lag(ffr)
+gdpdef<-pdfetch_FRED("GDPDEF") # GDP Price Deflator (price Level)
+gdpc1<-pdfetch_FRED("GDPC1") # Real GDP
+gap<-ts(100*(gdpc1-gdppot)/gdppot,start=c(1949,2),frequency=4) #Output Gap
+inf<-ts(100*(gdpdef-lag(gdpdef,4))/lag(gdpdef,4),start=c(1947,2),frequency=4) #Inflation, # Change from 1 year ago
+#Library for time series regression
+suppressWarnings(suppressMessages(library(dynlm)))
+```
+```{r}
+taylorrule<-dynlm(ffr~L(ffr)+inf+gap)
+```
+
+## Estimates
+
+```{r, echo=FALSE, results="asis"}
+## Display results in table
+suppressWarnings(suppressMessages(library(stargazer)))
+stargazer(taylorrule,header=FALSE, omit.stat=c("ser","adj.rsq"),font.size="tiny",title="Fed Funds Rate Policy Rule")
+```
+
+## Inference in Regression with dependent errors
+
+- Homoskedasticity assumption not critical
+    - Heteroskedasticity can be handled by using usual sandwich variance formula
+- Zero serial correlation in errors $E[u_tu_s|X_s,X_t]=0$ still needed
+- Strong assumption: given predictor variables, future values of outcome completely uncorrelated with past values
+- This might be true if we have included any past variables that are related to outcome
+- If errors serially correlated, future predictable from past, so should include more if forecasting 
+- May not want to or be able to include all relevant predictors
+- Don't need 0 serial correlation for consistency, asymptotic normality
+- If $u_t$ stationary and weakly dependent, OLS asymptototically normal, with a variance that depends on correlation in errors
+- Follows from weakly dependent CLT
+- If we can estimate the variance, can perform t and Wald tests with new variance estimator
+
+## Modeling Residual Serial Correlation
+
+- Can estimate long run variance if we have a model of serial correlation in errors
+- E.g. $u_t=\rho u_{t-1}+e_{t}$, $e_t\sim i.i.d.(0,\sigma_e^2)$ independent of $X$ then $Cov(u_t,u_{t+h})=\rho^h\sigma_e^2$
+- One parameter, can be estimated by two step procedure
+    - Regress $Y_t$ on $X_t$ to get residuals $\hat{u}_t$
+    - Regress $\hat{u}_t$ on $\hat{u}_{t-1}$ to get $\hat{\rho}$
+- With $\hat{\rho}$, can use it to run weighted regression which eliminates serial correlation
+- Generalized least squares procedure is **Cochrane-Orcutt** (or, with slight modifications, **Prais-Winsten**) method
+- Gives efficient estimates if model of serial correlation is correct
+- Can extend to AR(2) model, etc
+- If model not correct, still consistent, but inference not accurate
+
+## Example continued: Robust inference for Taylor Rule
+
+```{r,eval=FALSE}
+coeftest(taylorrule,vcovHAC)
+```
+
+```{r, echo=FALSE, results="asis"}
+suppressWarnings(suppressMessages(library(sandwich)))
+suppressWarnings(suppressMessages(library(lmtest)))
+taylorrobust<-coeftest(taylorrule,vcovHAC)
+stargazer(taylorrule,taylorrobust,header=FALSE, omit.stat=c("ser","adj.rsq"),font.size="tiny",title="Taylor Rule, Usual vs HAC standard errors")                 
+```
+
+## Sources of nonstationarity
+
+- Data nonstationary if $E[Y_t]\neq E[Y_s]$ or $Cov(Y_t,Y_{t+h})\neq Cov(Y_s,Y_{s+h})$ for $s\neq t$ 
+- Fails when value is deterministic function of time
+- Trends: many series grow (or shrink) over time
+    - Mean not a constant
+    - GDP much higher now than in past
+- Breaks: behavior of series differs after some time period
+    - Dollar price of gold constant at $35/oz 1945-1971, then increasing and highly variable after
+- Seasonality: behavior of series different in different quarters/months/day of the week
+    - Retail sales always largest in December
+- Fails when dynamics unstable
+    - Series has no well-defined mean or variance to return to
+    - E.g. Random walk: $Y_t=Y_{t-1}+e_t$, $E[e_t|Y_{t-1}]=0$ $\forall$ $t$
+    - Has conditional mean $E[Y_{t+h}|Y_t]=Y_t$ for $h>0$, but no time invariant distribution can satisfy above
+    - Same true of any unstable ARMA process
+
+## A trending time series: Prices, 1947-2016
+
+```{r, echo=FALSE}
+plot(gdpdef, main="Price Level (GDP Deflator)", ylab="Price Level")
+```
+
+## Dealing with nonstationary data
+
+- Running a regression using a nonstationary time series won't produce a consistent estimate
+- Tough luck for macroeconomists and forecasters: no reason future has to be like the past
+- But there is hope, if source of nonstationarity is known
+    - Transform series so that transformed series is stationary
+- When mean and variance known deterministic functions of time $\mu_t$ and $\sigma_t^2$, can just normalize
+    - $\frac{Y_t-\mu_t}{\sigma_t^2}$ is stationary
+- In any model built out of stationary components, can solve for the stationary variable
+- For random walk $Y_t=Y_{t-1}+e_t$, $Y_t$ nonstationary but $\Delta Y_t=e_t$ is stationary
+- Transformed variables are stationary but regression equation may have different interpretation
+    - GDP not stationary but GDP growth might be
+- Differences, ratios, etc can be used
+
+## Trend stationarity
+
+- Simplest case is deterministic trend
+    - $Y_t = \beta_0 +\beta_1 t + u_t$ for some stationary (not necessarily independent) $u_t$
+- Can also do quadratic trend $\beta_0 +\beta_1 t +\beta_2 t^2$, exponential trend etc
+- (Usually better to take logs and model as linear trend for exponentially growing series like many macroeconomic variables)
+- If we knew coefficients, we could just subtract trend
+- Solution: put trend as covariate in regression
+
+## Inference with time trends
+
+- With time trends, inference is nonstandard: book says not to trust $R^2$, in fact also don't trust SEs for these variables
+- It's not stationary, so strictly speaking consistency/normality results for stationary data don't apply, but they do still hold
+- In fact, coefficient on trend converges faster than usual, so asymptotically can ignore estimation error
+- Including trend as regressor equivalent to regressing both $Y$ and $X$ on $t$, running regression on residuals
+- Usual (or robust, if errors heteroskedastic or serially correlated) standard errors from this equivalent procedure are asymptotically valid
+
+
+``` {r, echo=FALSE}
+#This is just for myself: 
+# A simulation which demonstrates that the rate of converegence of OLS for estimating the coefficient on a linear trend is faster than the usual rate
+# For linear trends, the rate becomes Var(beta^hat)=O(1/T^2) instead of the usual O(1/T)
+# Exact rate depends on shape of trend: higher order polynomials are faster, lower order are slower
+#Detrending simulation
+n<-100
+Ti<-500
+b0<-1 #Coefficient on time trend
+#u<-rnorm(Ti)
+ys<-matrix(nrow=(Ti+1),ncol=n)
+tvec<-1:(Ti+1) #Time points
+bhvec<-vector(length=n) #coefficient for each simulation
+# Simulate length Ti series n times with linear trend and regress on time trend
+for (m in 1:(n)){
+  ys[1,m]<-0
+  for (s in 1:(Ti)){
+ys[s+1,m]<-b0*s+rnorm(1)
+  }
+  temp<-lm(ys[,m]~tvec)
+  bhvec[m]<-temp$coefficients[2]
+}
+```
+
+## Making data stationary 
+
+- Strategy of including deterministic function of time in regression generalizes
+- Seasonality
+    - Include dummy for month/quarter/day of week in regression to account for seasonal changes in mean
+- Breaks
+    - Include dummy for after/before break date
+- Other approach is transforming series directly
+    - Most government statistics reported already de-seasonalized
+    - Can also do something like $X_t-L^4X_t$ change in series over one year
+    - Since both in same season, seasonal mean removed
+
+## Integrated Series
+
+- Series where source of nonstationarity is random much harder to deal with
+- Random walk $Y_t=Y_{t-1}+e_t$ typical example of series with **stochastic trend**
+- Series drifts far away from any particular value, but this drift is not on preset path
+- With constant, $Y_t=b_0+Y_{t-1}+e_t$, expected to increase by $b_0$ each period, but doesn't stay close to line
+- Remove both trends by differencing: $\Delta Y_t= b_0 + e_t$ stationary
+- Any series $Y_t$ so that $Y_t$ nonstationary, $\Delta Y_t$ stationary, called **integrated** (of order 1)
+- Asset prices, exchange rates, many macro variables seem to look like this
+- Big concern because standard inference invalid if variable nonstationary
+
+## Removing integration
+
+- Failing to include trend if needed, or account for integration, creates bias in regression
+    - Will get strong relationship (small p value, high $R^2$) if both series trending
+    - Called "spurious" or "nonsense" correlation
+- Two trending series regressed on eachother will be correlated, even if no structural relationship
+    - "Time" is omitted variable
+- Simplest solution is to detrend: differencing removes stochastic and linear trends
+- Other detrending methods may have different properties
+- Many macroeconomists swear by something called the HP filter
+- Recent paper title: "Why you should never use the HP filter"
+
+## A tool for detecting dependence: the Autocorrelation Function (ACF)
+
+- ACF measures dependence between time periods
+- Autocovariance is $V(h)=Cov(Y_t,Y_{t+h})$
+- Should go to 0 and rapidly if series is weakly dependent
+- Traditional to divide by variance to get correlation instead of covariance
+    - $\gamma (h)=Corr(Y_t,Y_{t+h})=\frac{V(h)}{V(0)}$
+- Estimate by sample correlations, display chart
+- If it goes towards 0 quickly consistent with weak dependence
+- If not, may need to adjust series before using in regression
+- Shape may also be informative about structure
+    - e.g. AR(1) $Y_t=\rho Y_{t-1} + e_t$ has ACF $\gamma (h)= \rho^h$
+    - For random walk, acf declines linearly
+    - For MA(q), drops to 0 after q periods 
+- $acf()$ in $R$
+
+## Autocorrelation function of daily log price, S&P 500 (1-04-2010-Last Week)
+
+```{r, echo=FALSE}
+#Install useful time series libraries (uncomment if needed)
+#install.packages("forecast",repos="http://cran.us.r-project.org")
+#install.packages("readr",repos="http://cran.us.r-project.org")
+#install.packages("quantmod",repos="http://cran.us.r-project.org") 
+#Use quantmod to download data
+suppressWarnings(suppressMessages(library(quantmod)))
+#Get S&P500 Data
+invisible(suppressWarnings(suppressMessages(getSymbols("gspc",src="yahoo",from = "2010-01-01")))) #Load S&P 500
+spdata<-as.ts(GSPC) # Turn into usable time series format
+sp500<-spdata[,6] #Extract just adjusted closing price
+lsp500<-log(sp500) #Take logs
+suppressWarnings(suppressMessages(library(dynlm)))
+dftest<-dynlm(d(lsp500)~L(lsp500)+trend(lsp500))
+```
+
+## Staring at the ACF
+
+
+```{r,echo=FALSE}
+#Plot Autocorrelation function of log S&P 500
+acf(lsp500,lag.max=120)
+```
+
+
+## Gapminder 
+
+For each of 142 countries, the package provides values for life expectancy, GDP per capita, and population, every five years, from 1952 to 2007.
+
+## Working with the data
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+    gapminder %>%
+      filter(year == 2007) %>%
+      group_by(continent) %>%
+      summarise(lifeExp = median(lifeExp))
+```
+
+
+## Working with the data    
+    
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+    table(gapminder$continent)
+    aggregate(lifeExp ~ continent, gapminder, median)
+
+    ```
+
+
+## Working with the data    
+    
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+    plot(lifeExp ~ year, gapminder, subset = country == "Cambodia", type = "b")
+    ```
+
+
+## Working with the data    
+    
+    
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+    plot(lifeExp ~ gdpPercap, gapminder, subset = year == 2007, log = "x")
+    ```
+
+
+## Working with the data   
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(gapminder)
+
+  # for convenience, integrate the country colors into the data.frame
+ gap_with_colors <-
+      data.frame(gapminder,
+                 cc = I(country_colors[match(gapminder$country,
+                                             names(country_colors))]))
+   keepers <- with(gap_with_colors,
+                    continent %in% c("Africa", "Europe") & year == 2007)
+    plot(lifeExp ~ gdpPercap, gap_with_colors,
+         subset = keepers, log = "x", pch = 21,
+         cex = sqrt(gap_with_colors$pop[keepers]/pi)/1500,
+         bg = gap_with_colors$cc[keepers])
+```
+
+
+## Bubble plots
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+# spaghetti plot for lots of countries
+    ggplot(subset(gapminder, continent != "Oceania"),
+           aes(x = year, y = lifeExp, group = country, color = country)) +
+      geom_line(lwd = 1, show_guide = FALSE) + facet_wrap(~ continent) +
+      scale_color_manual(values = country_colors) +
+      theme_bw() + theme(strip.text = element_text(size = rel(1.1)))
+```
+
+## Working with different graph types 
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+gap_bit <- subset(gapminder, year == 2007 & continent != "Oceania")
+    gap_bit <- gap_bit[with(gap_bit, order(continent, -1 * pop)), ]
+    ggplot(gap_bit, aes(x = gdpPercap, y = lifeExp, size = pop)) +
+      scale_x_log10(limits = c(150, 115000)) + ylim(c(16, 96)) +
+      geom_point(pch = 21, color = 'grey20', show_guide = FALSE) +
+      scale_size_area(max_size = 40) +
+      facet_wrap(~ continent) + coord_fixed(ratio = 1/43) +
+      aes(fill = country) + scale_fill_manual(values = country_colors) +
+      theme_bw() + theme(strip.text = element_text(size = rel(1.1)))
+```
+
+
+## Sub setting for 5 countries
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+ h_countries <- c("Egypt", "Haiti", "Romania", "Thailand", "Venezuela")
+ h_dat <- droplevels(subset(gapminder, country %in% h_countries))
+    h_dat$country <- with(h_dat, reorder(country, lifeExp, max))
+    ggplot(h_dat, aes(x = year, y = lifeExp)) +
+      geom_line(aes(color = country)) +
+      scale_colour_manual(values = country_colors) +
+      guides(color = guide_legend(reverse = TRUE))
+```
+
+
+
+## Summary
+
+- With dependent data, can still learn from standard regression methods
+- If data stationary and weakly dependent, have consistency and asymptotic normality
+- If errors still correlated, can use robust variance estimate
+- If nonstationary, can model form of nonstationarity and get rid of it
+    - Include time trend (or season dummies, etc) in regression
+    - Difference or filter data
+- Once stationarity and weak dependence restored, estimation, inference, interpretation    
+
+## Lecture 7 Machine Learning 
+
+- Lots of hype. But ML studies the design of algorithms that can learn. 
+- Learning means it improves its performance as it receives more data. 
+-  Typical machine learning tasks are concept learning, classification, function learning or "predictive modeling", clustering and finding predictive patterns
+- These tasks are learned through available data that were observed through experiences or instructions
+- The ultimate goal is to improve the learning in such a way that it becomes automatic, so that humans don't need to interfere any more.
+
+## Input knowledge
+
+- data that contain features (wage, sector, etc)
+- in R this is just a data.frame()
+- Use dim() or str() or summary() to figure out size of the data set
+
+## Notion of 'learning' 
+
+- Supervised vs  Vs UnSupervised 
+- Supervised: finding a function which can be used to assign a class or value to unseen observations given a set of labeled observations. (Regression)
+- Unsupervised: When you don't need labels (Clustering). Problem: you can't measure the performance of your model directly. 
+- Semi-supervised: when you have only a few labels but let the algorithm produce most of the clusters itself. 
+
+## Learning is applying a function to inputs to generate an output
+
+- that might seem like it's just regression. 
+- But it's not. The goal is model building for prediction. 
+
+## Example: Using Wage data, predict the wage for a 60 year old worker. The prediction is ML.
+
+```{r}
+library(ISLR)
+data(Wage)
+# Build Linear Model: lm_wage
+lm_wage <- lm(wage ~ age, data = Wage)
+# Define data.frame: unseen
+unseen <- data.frame(age = 60)
+# Predict the wage
+predict(lm_wage, unseen)
+```
+
+
+
+## Interpreting the result
+
+Wage for a 60 year old worker is predicted to be 124 dollars per day. 
+
+## Common ML approaches to solving problems
+
+1. Classification: predicting whether a new observation falls into a certain category. Very useful for medical diagnosis and facial recognition. The output here is qualitative and the classes are known. 
+2. Regression: estimate a function that maps inputs to outputs based on a function and predict from it. Output is quantitative. Eg predicting weight and height. You need to find good values for the coefficients from previous values. 
+3. Clustering. Group similar objects while making sure clusters are distinct. Here you don't need knowlege about labels. K-means is a good method. It clusters your data in K clusters. 
+
+Regression and clustering are quite similar. You're trying to find a function which can be used to assign a class or value to unseen observations. T
+
+
+
+## Clustering (code)
+
+```{r, message=FALSE, warning=FALSE,  results="hide"}
+# Set random seed. Don't remove this line.
+set.seed(1)
+#Load the data
+data(iris)
+# Chop up iris in my_iris and species
+my_iris <- iris[-5]
+species <- iris$Species
+# Perform k-means clustering on my_iris: kmeans_iris
+kmeans_iris <- kmeans(my_iris, 3)
+# Compare the actual Species to the clustering using table()
+table(species, kmeans_iris$cluster)
+# Plot Petal.Width against Petal.Length, colouring by cluster
+ggplot(data=my_iris)+aes(x = Petal.Length, y = Petal.Width, col = kmeans_iris$cluster)+geom_point()
+```
+
+## Clustering Output
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+# Set random seed. Don't remove this line.
+set.seed(1)
+#Load the data
+data(iris)
+# Chop up iris in my_iris and species
+my_iris <- iris[-5]
+species <- iris$Species
+# Perform k-means clustering on my_iris: kmeans_iris
+kmeans_iris <- kmeans(my_iris, 3)
+# Compare the actual Species to the clustering using table()
+#table(species, kmeans_iris$cluster)
+# Plot Petal.Width against Petal.Length, colouring by cluster
+ggplot(data=my_iris)+aes(x = Petal.Length, y = Petal.Width, col = kmeans_iris$cluster)+geom_point()
+```
+
+
+## Why is machine learning important for public policy? 
+
+- Example. A common ML approach is to train a system by showing it a vast quantity of data on, say, students and their achievements. 
+
+- The software chews through the examples and learns which characteristics are most helpful in predicting whether a student will drop out. 
+
+- Once `trained', it can study a different group and accurately pick those at risk. 
+
+- State systems are stuffed with administrative data and newer data types amenable to that kind of analysis. 
+
+- taxation and expenditure systems/health and social protection systems/newer sources of data (eg toll data, phone data)
+
+
+## Training
+
+- Training is just regression based on a very large dataset, you've seen that before. 
+- The difference is the method used to train, the solution system, and the way these methods are applied. 
+
+
+
+## Prediction & training & application
+
+
+- In hospitals doctors try to predict heart attacks so they can act before it is too late. 
+- Manual systems correctly predict around 30%. 
+- A machine-learning algorithm created by Sriram Somanchi of Carnegie Mellon University and colleagues, and tested on historic data, predicted 80%—four hours in advance of the event, in theory giving time to intervene. 
+
+## Example: Understanding racial disparities in New York City's Stop and Frisk Policy
+
+- Annals of Applied Statistics, 2016. 
+- Stop and frisk: NYC Zero tolerance policy. Idea is that by stopping smaller transgressions, larger ones can be avoided. 
+- Problems with this 
+-- most of the time (90% +) nothin happens. The person is hassled and time is wasted.
+-- The people most likely to be stopped are blacks and hispanics (+80%)
+- Problem: how to see if it is discriminatory? 
+
+## Discrimination or fair policy? 
+
+- Previous studies analysed the racially motivated stops using instruments. 
+- These guys looked at 3 million stops between 2008 and 2012, focusing in on 760,000 weapon stops. 
+-  Legally cops can't stop people unless they think there's a likelihood of something going down. 
+- this is the likelihood based only on information available to officers prior to the stop decision that the stopped individual has a weapon. 
+- They find that in 43% of the approximately 300,000 CPW stops between 2011 and 2012, there was at most a 1% chance of finding a weapon on the suspect.
+
+## Discrimination or fair policy? 
+
+- They find that blacks and Hispanics were disproportionately involved in low hit rate stops
+- They trace this disparity to two factors: (1) the highly localized nature of the policy, and (2) discriminatory enforcement.
+- High crime areas, particularly NYC public housing, have lower stop thresholds, presumably reflecting more aggressive efforts to reduce crime in those locations. Since these areas are home to large numbers of blacks and Hispanics, members of these groups were disproportionately impacted by stop standards that differed by location. 
+
+## One of these isn't machine learning. Which? 
+
+a. Given a viewer's shopping habits, recommend a product to purchase the next time she visits your website.
+b. Given the symptoms of a patient, identify her illness.
+c. Predict the USD/EUR exchange rate for February 2016.
+d. Compute the mean wage of 10 employees for your company.
+
+
+## Using R For k-Nearest Neighbors (KNN)
+
+- Instance-based learning.  new data are classified based on stored, labeled instances. 
+-  the distance between the stored data and the new instance is calculated by means of some kind of a similarity measure. 
+- This similarity measure is typically expressed by a distance measure such as the Euclidean distance, cosine similarity or the Manhattan distance. In other words, the similarity to the data that was already in the system is calculated for any new data point that you input into the system
+- Then, you use this similarity value to perform predictive modeling. Predictive modeling is either classification, assigning a label or a class to the new instance, or regression, assigning a value to the new instance. 
+- Whether you classify or assign a value to the new instance depends of course on your how you compose your model with KNN.
+
+## More on KNN 
+
+- distance of the new point to all stored data points has been calculated, the distance values are sorted and the k-nearest neighbors are determined
+
+-  The labels of these neighbors are gathered and a majority vote or weighted vote is used for classification or regression purposes
+
+-  In the case of regression, the value that will be assigned to the new data point is the mean of its k nearest neighbors.
+
+
+## Example (code)
+
+```{r,  results="hide"}
+library(class) # This has the KNN algorithm
+attach(iris)
+summary(iris[c("Sepal.Width", "Petal.Width")])
+normalize <- function(x) {
+  num <- x - min(x)
+  denom <- max(x) - min(x)
+  return (num/denom)
+}
+iris_norm <- as.data.frame(lapply(iris[1:4], normalize)) # Normalise the dataset
+summary(iris_norm)
+```
+
+
+## Example (output)
+
+
+```{r,  results="hide"}
+library(class) # This has the KNN algorithm
+attach(iris)
+normalize <- function(x) {
+  num <- x - min(x)
+  denom <- max(x) - min(x)
+  return (num/denom)
+}
+summary(iris[c("Sepal.Width", "Petal.Width")])
+iris_norm <- as.data.frame(lapply(iris[1:4], normalize)) # Normalise the dataset
+summary(iris_norm)
+```
+
+## Example: Training
+
+```{r, results="hide"}
+set.seed(1234)
+ind <- sample(2, nrow(iris), replace = TRUE, prob = c(0.67, 0.33)) #Take a sample
+iris.training <- iris[ind == 1, 1:4]
+iris.test     <- iris[ind == 2, 1:4]
+iris.trainLabels <- iris[ind == 1, 5]
+iris.testLabels  <- iris[ind == 2, 5]
+```
+
+## Example: The model itself
+
+```{r}
+iris_pred <- knn(train = iris.training, test = iris.test, cl = iris.trainLabels, k = 3) #This is the classifier.
+iris_pred # Get some results back. The result of this command is the factor vector with the predicted classes for each row of the test data.
+```
+
+## Evaluating the model 
+
+```{r}
+df <- data.frame(iris_pred, iris.testLabels)
+names(df) <- c("Predicted Species", "Observed Species")
+df
+```
+
+## Generating a cross table. 
+
+Result: Pretty good prediction 
+
+```{r, echo=FALSE}
+library(gmodels)
+CrossTable(x = iris.testLabels, y = iris_pred, prop.chisq = FALSE)
+```
+
+## Why is this important? 
+
+- KNN is just one, very simple example of a range of techniques being developed to understand patterns in large data *and* make predictions from it. 
+- Iris is a very small dataset, and so is tractable. We can use massive datasets and the KNN algorithm will do a pretty good job. 
+
+## What about causal inference? 
+
+- In policy world we often want to ask what causal effects will be of, say, a price change or a tax increase (or whatever)
+- This really ammounts to changing the underlying training data
+- Currently Machine Learning doesn't do well with this, but lots of people are working on making it better. 
+
+ 
+## Lecture 8. Modeling for public policy 
+ 
+ 
+## Motivation
+
+We're typically interested in statistical models. Statistical models are used for 
+
+1. Identifying patterns in data
+2. Classifying events
+3. Untangling multiple causal influences
+4. Assessing strength of evidence. 
+
+Statistical models give you more power to analyse the real world than simple tests than (say) the t test. 
+
+## Literature in Computer science very different to economics 
+
+- focus in this literature is typically on methods that “work,” more than on deriving asymptotic (large sample) results of the type that are common in the econometrics and mathematical statistics literature. 
+
+- There is also less emphasis on confidence intervals and standard errors.
+- Heavy emphasis on out-of-sample comparisons, in particular cross- validation.
+- Also less emphasis on causal effects as opposed to prediction.
+
+See Breiman, L. (2001a), “[Statistical Modeling: The Two Cultures](http://www2.math.uu.se/~thulin/mm/breiman.pdf),” Statistical Science, Vol. 16(3): 199-215.
+
+
+## Types of Machine Learning 
+
+- Unsupervised
+
+-- Clustering
+-- Principal components analysis
+
+- Supervised
+
+-- Regression
+-- K nearest neighbour
+-- Trees
+-- Nearest neighour 
+-- Support vector machines 
+-- Random Forests
+-- Ensemble Methods
+
+- Semi-Supervised 
+
+## A model is a representation for a purpose. 
+
+* representation: it stands for something in reality we'd like to know more about. 
+
+* Purpose: we care about attributing something like causality, etc. 
+
+
+These models are useful for one or more purposes, but have severe and important limitations. We build models because they are much more understandable than the real world. 
+
+Models can be made of paper, clay, plastic, cardboard, and mathematics. They needn't be equations at all. Think of blueprints for a house or a model plane, or a flight simulator to train pilots. 
+
+Statistical models are versions of mathematical models, informed by and based on data. 
+
+We typically use these things to ask defined questions we call hypotheses. We then accept or reject the hypotheses based on what the output of the model is. 
+
+We can also move from experimental results to a prediction. 
+
+## Example 1 
+
+Say you've a model of student test scores by gender. 
+
+* Private schools with 10% more boys than girls score 10% below the national average. 
+* Private schools with 10% more girls than boys score 10% above the national average. 
+* What happens if we double the girls to boys ratio? That is, we increase from 10% more boys than girls to 20% more boys than girls?
+
+Use this very common linear strategy for making your prediction:
+
+*If the change in output going from 0 to 1 is X, then the change in output going from 1 to 2 will also be X.*
+
+Find the change in output for each of the inputs in turn. Add up the individual changes to get the anticipated change when more than one input is changed.
+
+Can you see how this is related to the *marginal* concept we studied last semester? 
+
+## Objects for statistical modeling
+
+You need 3 things to get a model working. Again, you'll typically want to use a model to predict, or account for, some variable. 
+
+* Formulas. These relate variables to one another. They are causal statements. EG: WAGE ~ EXPERIENCE + GENDER. This says your wage is explained (we think) by the number of years of experience you have, and your gender. The squiggle yoke is called 'tilde'. 
+* Data frames--a collection of variables. Each variable gets a column, this column gets a name. The rows are cases (sometimes called elements). 
+* Functions. These are the building blocks of models and produce the outputs of the models. You need formulas and data frames to make functions work effectively. 
+
+## Example 2
+
+
+```{r, echo=TRUE}
+library(mosaic) # This attaches the library. It has interesting data and alters how we use the mean() function.
+
+mean(wage ~ sector, data = CPS85) # This gives us the average wage in each sector in the data.
+
+my_model <- lm(wage ~ exper + sector, data = CPS85) # The wage is the resonse variable. The lm function, which we'll explain in a second, takes inputs as explanatory variables from 'experience' and 'sector' variables, and produces an output. A simple way to think about this is that the response variable is to the left of the tilde, the explanatory variables are to the right of the tilde. 
+summary(my_model) # Let's spend some time looking at the individual coefficients and asking what they might mean. 
+plot(my_model) # Produces ALL the plots
+```
+
+## Thinking (again) about interpreting the formula
+
+The formula is a bit like a sentence. EG WAGE ~ SECTOR is equivalent to 
+
+1. WAGE as a fucntion of SECTOR
+2. WAGE accounted for by SECTOR
+3. WAGE modeled by SECTOR
+4. WAGE explained by SECTOR
+5. WAGE given by SECTOR
+6. WAGE broken down by SECTOR
+
+
+## A digression on the NULL hypothesis for a moment.
+
+What we're actually trying to do the whoe time is explain variation. 
+
+This means we must try to distinguish random variation from purposeful, or causal, variation. 
+
+There are millions of reasons wages vary, and some of them can't be measured. But a lot of the time the explanatory variables we choose do explain a fair amount of the variation. 
+
+The rest, the unexplained bit, we think of as being essentially random. 
+
+So what you're doing all the time in this work is comparing your results to what you would get if the null hypothesis were true. If your results are very different, you're rejecting the null hypothesis, that it's all random. If your results are almost the same, then you fail to reject the null hypothesis. 
+
+You also need to assign a penalty to the null data, but we'll get to that later. 
+
+## Example 
+
+```{r}
+library(statisticalModeling) #This package has the data
+library(mosaic) # This package alters the 'mean' and sd() commands so that they can be used with formulas.
+names(AARP) # Find the variable names in AARP
+mosaic::mean(Cost ~ Sex, data = AARP) # Find the mean cost broken down by sex
+```
+
+## Graphics with formulas
+
+You're going to love the graphics, here are two examples. 
+
+```{r}
+boxplot(Cost ~ Sex, data=AARP) #boxplot of Cost and Sex using base graphics.
+gf_point(Cost ~ Sex, data=AARP) #Scatterplot using ggplot2
+```
+
+## Modeling is *always* a process
+
+It is messy. Typically you have ideas, and then you'll test those ideas by designing a model, which you train using your data, which you've cleaned and graphed and understood using summary statistics. You then evaluate the model, test its performance, and then see how your model challenges your ideas. 
+
+1. The first step is always, always, GET THE DATA. 
+2. Decide which variables are response and explanatory variables. 
+3. Select a model architecture. We'll typically use linear regression (lm()). We can also use recursive partitioning. 
+4. The computer 'trains' or 'fits' the data to the model, and vice versa. 
+
+
+## Questions to ask
+
+* Why do we want to choose wage as the response variable?
+* Choose Educ and Exper as explanatory variables. 
+
+Let's use three models to see how different they are. 
+
+## Example
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+# Find the variable names in Runners 
+library(mosaicData)
+library(gridExtra)
+# Build models: handicap_model_1, handicap_model_2, handicap_model_3 
+handicap_model_1 <- lm(net ~ age, data = Runners)
+handicap_model_2 <- lm(net ~ sex, data = Runners)
+handicap_model_3 <- lm(net ~ age + sex, data = Runners)
+# For now, here's a way to visualize the models
+f1<-fmodel(handicap_model_1)
+f2<-fmodel(handicap_model_2)
+f3<-fmodel(handicap_model_3)
+grid.arrange(f1, f2, f3, ncol=3)
+```
+
+## Recursive partitioning
+
+We just used the linear modeling architecture to construct a model of a runner's time as a function of age and sex. There are many different model architectures available. Now we'll build models using the recursive partitioning architecture. The model-building function to use is rpart(), which is analogous to lm() for linear models.
+
+The recursive partitioning architecture has a parameter, cp, that allows you to dial up or down the complexity of the model being built. Without worrying about the details just yet, you can set this parameter as a named argument to rpart().
+
+## Example (code)
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+library(rpart)
+library(mosaic)
+library(statisticalModeling)
+library(gridExtra)
+#Let's use two different models. 
+model_1 <- lm(Cost ~ Age + Sex + Coverage, data=AARP) #First model, a linear one.
+# Build rpart model: model_2
+model_2 <- rpart(Cost ~ Age + Sex + Coverage, data=AARP, cp = 0.005) # Second model, a recursive partitioning one.
+#Examine graph of model_1
+p1<-fmodel(model_1, ~ Age +  Coverage)
+# Examine graph of model_2 
+p2<-fmodel(model_2, ~ Age + Coverage)
+# Display them side by side
+grid.arrange(p1, p2, ncol=2)
+```
+
+
+## Example (Output)
+
+Note the different stories the different models tell. The decisions the modeler makes have an impact on the results. 
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(rpart)
+library(mosaic)
+library(statisticalModeling)
+library(gridExtra)
+#Let's use two different models. 
+model_1 <- lm(Cost ~ Age + Sex + Coverage, data=AARP) #First model, a linear one.
+# Build rpart model: model_2
+model_2 <- rpart(Cost ~ Age + Sex + Coverage, data=AARP, cp = 0.005) # Second model, a recursive partitioning one.
+#Examine graph of model_1
+p1<-fmodel(model_1, ~ Age +  Coverage)
+# Examine graph of model_2 
+p2<-fmodel(model_2, ~ Age + Coverage)
+# Display them side by side
+grid.arrange(p1, p2, ncol=2)
+```
+
+## Evaluating a model
+
+* You evaluate by providing a model with inputs
+* Then you calculate the resulting output. Here you use the predict() function. * Predict is a kind of fortune-telling device. We can use our actual data to figure out how good the model is, and how bad it is. That gives us a measure of 'prediction error'.
+
+## Example 
+```{r}
+library(mosaic)
+library(statisticalModeling)
+# Build a model: insurance_cost_model
+insurance_cost_model <- lm(Cost ~ Age + Sex + Coverage, data=AARP)
+#Construct a data frame: example_vals 
+example_vals <- data.frame(Age = 60, Sex = "F", Coverage = 200)
+# Predict insurance cost using predict()
+predict(insurance_cost_model, newdata=example_vals)
+# Calculate model output using evaluate_model()
+evaluate_model(insurance_cost_model, data=example_vals)
+```
+
+## Extrapolation 
+
+One purpose for evaluating a model is extrapolation: finding the model output for inputs that are outside the range of the data used to train the model.
+
+Extrapolation makes sense only for quantitative explanatory variables. For example, given a variable x that ranges from 50 to 100, any value greater than 100 or smaller than 50 is an extrapolation.
+
+In this exercise, you'll extrapolate the AARP insurance cost model to examine what the model suggests about insurance costs for 30-year-olds and 90-year-olds. Keep in mind that the model outputs might not make sense. Models trained on data can be a bit wild when evaluated outside the range of the data.
+
+## Example
+
+```{r}
+library(mosaic)
+library(statisticalModeling)
+# Build a model: insurance_cost_model
+insurance_cost_model <- lm(Cost ~ Age + Sex + Coverage, data = AARP)
+
+# Create a data frame: new_inputs_1
+new_inputs_1 <- data.frame(Age = c(30, 90), Sex = c("F", "M"), Coverage = c(0, 100))
+
+# Use expand.grid(): new_inputs_2
+new_inputs_2 <- expand.grid(Age = c(30, 90), Sex = c("F", "M"), Coverage = c(0, 100))
+
+?expand.grid
+
+# Use predict() for new_inputs_1 and new_inputs_2
+predict(insurance_cost_model, newdata = new_inputs_1)
+predict(insurance_cost_model, newdata = new_inputs_2)
+
+# Use evaluate_model() for new_inputs_1 and new_inputs_2
+evaluate_model(insurance_cost_model, data = new_inputs_1)
+evaluate_model(insurance_cost_model, data = new_inputs_2)
+```
+
+## Choosing explanatory variables
+
+What's the purpose of your model? 
+
+1. Make preductions about outcomes
+2. Running experiments to study relationships
+3. Exploring data to 'hunt' out relationships between variables. 
+
+## Basic choices in model architecture
+
+1. If the response variable is categorical (yes/no, etc) use rpart()
+2. If response variable is numerical (eg inflation rate) use lm()
+
+## Comparing prediction results
+
+Compare predictive performance of two models, without including a variable, and with. When you train and test a model, you use data with values for the explanatory variables as well as the response variable. Training effectively creates a function that will take as inputs values for the explanatory variables and produce as output values corresponding to the response variable.
+
+If the model is good, when provided with the inputs from the testing data, the outputs from the function will give results "close" to the response variable in the testing data. How to measure "close"? The first step is to subtract the function output from the actual response values in the testing data. The result is called the prediction error and there will be one such error for every case in the testing data. You then summarize that set of prediction errors.
+
+<!-- ## Example -->
+
+<!-- ```{r} -->
+<!-- library(mosaicData) -->
+<!-- # Build a model of net running time -->
+<!-- base_model <- lm(net ~ age + sex, data = Runners_100) -->
+
+<!-- # Evaluate base_model on the training data -->
+<!-- base_model_output <- predict(base_model, newdata = Runners_100) -->
+
+<!-- # Build the augmented model -->
+<!-- aug_model <- lm(net ~ age + sex + previous, data = Runners_100) -->
+
+<!-- # Evaluate aug_model on the training data -->
+<!-- aug_model_output <- predict(aug_model, newdata = Runners_100) -->
+
+<!-- # How much do the model outputs differ? -->
+<!-- mean((aug_model_output - base_model_output) ^ 2, na.rm = TRUE) -->
+<!-- ``` -->
+
+<!-- ## Here's two models and the computation of their squared errors. The augmented model gives slightly better predictions.  -->
+
+<!-- ```{r} -->
+<!-- # Build and evaluate the base model on Runners_100 -->
+<!-- base_model <- lm(net ~ age + sex, data = Runners_100) -->
+<!-- base_model_output <- predict(base_model, newdata = Runners_100) -->
+
+<!-- # Build and evaluate the augmented model on Runners_100 -->
+<!-- aug_model <- lm(net ~ age + sex + previous, data= Runners_100) -->
+<!-- aug_model_output <- predict(aug_model, data = Runners_100) -->
+
+<!-- # Find the case-by-case differences -->
+<!-- base_model_differences <- with(Runners_100, net - base_model_output) -->
+<!-- aug_model_differences <- with(Runners_100, net - aug_model_output) -->
+
+<!-- # Calculate mean square errors -->
+<!-- mean(base_model_differences ^ 2) -->
+<!-- mean(aug_model_differences ^ 2) -->
+<!-- ``` -->
+
+
+<!-- # Cross Validation  -->
+
+<!-- You need to train and test data, all the time. So partition what you've got into 1/ training and 2/testing data. The model needs to be trained without seeing the test data. We use the test data's outputs as the comparator for the actual data.  -->
+
+<!-- It's typically good to calculate the mean square error when comparing models. Your goal is to see whether there is a systematic difference between prediction accuracy on the training and on the testing cases. -->
+
+<!-- ## Example  -->
+
+<!-- ```{r} -->
+<!-- # Generate a random TRUE or FALSE for each case in Runners_100 -->
+<!-- Runners_100$training_cases <- rnorm(nrow(Runners_100)) > 0 -->
+
+<!-- # Build base model net ~ age + sex with training cases -->
+<!-- base_model <- lm(net ~ age + sex, data = subset(Runners_100, training_cases)) -->
+
+<!-- # Evaluate the model for the testing cases -->
+<!-- Preds <- evaluate_model(base_model, data = subset(Runners_100, !training_cases)) -->
+
+<!-- # Calculate the MSE on the testing data -->
+<!-- with(data = Preds, mean((net - model_output)^2)) -->
+<!-- ``` -->
+
+<!-- As a general rule, estimates of prediction error based on the training data will be smaller than those based on the testing data. Still, because the division into training and testing sets is done at random, it will happen from time to time that the opposite appears. -->
+
+<!-- Remember that models are biased to perform well on the training data. Cross validation gives a fair indication of the prediction error on new data. -->
+
+<!-- ## Example -->
+
+<!-- ```{r} -->
+<!-- # The model -->
+<!-- model <- lm(net ~ age + sex, data = Runners_100) -->
+
+<!-- # Find the in-sample error (using the training data) -->
+<!-- in_sample <- evaluate_model(model, data = Runners_100) -->
+<!-- in_sample_error <-  -->
+<!--   with(in_sample, mean((net - model_output)^2, na.rm = TRUE)) -->
+
+<!-- # Calculate MSE for many different trials -->
+<!-- trials <- cv_pred_error(model) -->
+
+<!-- # View the cross-validated prediction errors -->
+<!-- trials -->
+
+<!-- # Find confidence interval on trials and compare to training_error -->
+<!-- mosaic::t.test(~ mse, mu = in_sample_error, data = trials) -->
+<!-- ``` -->
+
+
+## Prediction error for categorical response variables
+
+* When the variables are numerical, it is always possible to compare the results of a model against prdedicted values.
+* Imagine 2 models looking at whether marital status can help (or not) understanding data. You need to count how many mistakes the model makes. 
+* You're still trying to subtract the predicted response rate (or value) from the actual response rate (or value). 
+* With categorical variables, you're looking at the categorical error rate because you can't really think about subtracting categories. 
+* What about thinking about probabilities of different levels? We could do that easily using R. Now we can think about the various outputs of the models as the probability of each item happening. 
+* You combine the probabilities into a 'likelihood' measure, and for a few reasons, you take the log of this number.
+
+## This example compares a null model, basically a random guess, to other variable 
+```{r}
+ # Build the null model with rpart()
+Runners$all_the_same <- 1 # null "explanatory" variable
+null_model <- rpart(start_position ~ all_the_same, data = Runners)
+
+# Evaluate the null model on training data
+null_model_output <- evaluate_model(null_model, data = Runners, type = "class")
+
+# Calculate the error rate
+with(data = null_model_output, mean(start_position != model_output, na.rm = TRUE))
+
+# Generate a random guess...
+null_model_output$random_guess <- mosaic::shuffle(Runners$start_position)
+
+# ...and find the error rate
+with(data = null_model_output, mean(start_position != random_guess, na.rm = TRUE))
+```
+
+
+## Covariates
+
+Uses for a model
+
+* Making predictions with available data--weather forecasting, google estimating your time of arrival when you use Google Maps. 
+* Exploring large data sets--the current Big Data fad.
+* Analysing the outcome of an intervention in the system--very important for policy
+
+## Our well-used example: does spending more on education improve outcomes? 
+
+Staring at the SAT Data. 
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(mosaicData)
+library(tidyverse)
+library(UsingR)
+ggplot(data=SAT) + aes(x = expend, y = total, label = state) + geom_point() + geom_text(aes(label=state),hjust=0, vjust=0)
+```
+
+## Model
+
+The data are telling us spending more reduces your SAT score. Something is clearly wrong. What? 
+
+* Teacher salary?
+* Religious ethos?
+* fraction of people taking the test? 
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(mosaicData)
+library(UsingR)
+ggplot(data=SAT)+ aes(x = ratio, y = total, label = state) + geom_point() + geom_text(aes(label=state))
+```
+
+## Covariates
+
+* frac is an explanatory variable. It's not the main thing, but it is something we should possibly care about. * What you'd like to do is hold 'frac' constant and then see how SAT scores fluctuate. 
+* Loads of important covariates, for example expend ~ state, expend ~ frac + state, and so on. 
+* By including a covariate, you are effectively determining which two groups to compare. 
+
+Let's look at building up a model using covariates to try to understand wher gender pay equity (or inequity) can be understood using this approach. 
+
+## Example 
+
+```{r, results="hide"}
+library(mosaicData)
+data("Trucking_jobs")
+# Train the five models
+model_1 <- lm(earnings ~ sex, data = Trucking_jobs)
+model_2 <- lm(earnings ~ sex + age, data = Trucking_jobs)
+model_3 <- lm(earnings ~ sex + hiredyears, data = Trucking_jobs)
+model_4 <- lm(earnings ~ sex + title, data = Trucking_jobs)
+model_5 <- lm(earnings ~ sex + age + hiredyears + title, data = Trucking_jobs)
+
+# Evaluate each model...
+evaluate_model(model_1)
+evaluate_model(model_2, age = 30)
+evaluate_model(model_3, hiredyears = 10)
+evaluate_model(model_4, title = 'PROGRAMMER')
+evaluate_model(model_5, age = 30, hiredyears = 10,
+               title = 'PROGRAMMER')
+
+# ...and calculate the gender difference in earnings using the output.
+diff_1 <- 40236.35 - 35501.25
+diff_2 <-  35138.86 - 32784.54
+diff_3 <- 43326.33 - 39696.29
+diff_4 <- 41616.92 -  41949.25
+diff_5 <- 44406.67 - 44391.39
+
+```
+
+
+## Effect size
+
+- how does changing an input model change an output value?
+- here the inputs *cause* the output
+- Doesn't mean the real world works that way. 
+- Natural units for effect sizes
+- Quantiative variables: effect size is a rate. 
+- Eg change in wage by hour per year.
+- Categorical variable: effect size is a difference. 
+
+## Effect size is a property of the model, not the data
+
+- You must include the variable you want to measure. 
+- Then you can compare the output of different values of the explanatory variable. 
+
+
+## Example
+```{r}
+library(statisticalModeling) #load the package with data in it.
+#Train a model to look at life insurance
+model<-lm(Cost ~ Age + Sex + Coverage, data=AARP)
+# Calculate the effect size for each input, which is calculated holding each of the other explanatory variables constant.
+effect_size(model, ~Age) # This command  takes two arguments: the model and a formula indicating which variable to vary when looking at the model output.
+effect_size(model, ~Sex)
+effect_size(model, ~Coverage) # EG A change in coverage from 50 to 75 corresponds to a change in cost of 25 * 1.82 USD/month. Always keep the units in mind when interpreting effect sizes. The magnitude of the effect size is only meaningful in terms of those units.
+```
+
+
+## Summary
+
+- A big (no pun intended) and emerging field
+- Application of machine-learning willy nilly to public policy problems probably won't be successful unless we change the methods somewhat. 
+
+Next time: interview-based economic analysis. 
