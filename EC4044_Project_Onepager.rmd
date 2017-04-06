@@ -1,0 +1,37 @@
+---
+title: "Economic Analysis Project Outline"
+author: "A. Student."
+date: "18/1/2017"
+output:
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Title: Examples are italics. The Changing Causes of Irish Business Failure 1986-2006
+
+
+## Problem Statement 
+	
+A one-line statement of what you are looking at. The reader should be able to understand your research question(s) after reading this, and be able to understand the work that you will do for the FYP. For example: An economic investigation of the changing causes of Irish Business Failure, 1986-2006.
+
+## Background 
+
+Here write two or three sentences with references on 1. why this topic is important;  2. what the last work has been on this subject. For example: Almost 60% of new Irish businesses in 1986 failed (Smith et al, 2004, pp.34-36). Less than 20% did in 2005. How much of this is due to prevailing market and macroeconomic conditions and how much due to differences in the nature of the Irish firm? This paper seeks to find some answers.
+
+## Methodology 
+
+Will you use econometrics/descriptive statistics/mathematics/basic qualitative analysis? Quick sentence here. For example: data will be analysed using two stage least squares following descriptive statistics examination.
+
+## Data 
+
+What data are you using? Where is it from? How often does it occur? For example: Data obtained from Companies Registration Office on liquidations of business assets from 1986--2006.
+
+##Expected Results 
+
+This should show the reader where you think the project is going. It doesn't have to get there, but you need to have a general direction mapped out beforehand. For example: Ireland's macroeconomic conditions were a significant determinant of Irish business success over the period of study, pointing to a role for business in negotiations on stabilisation policy in Ireland.
+
+## References
