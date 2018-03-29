@@ -2452,7 +2452,7 @@ ggplot(data=my_iris)+aes(x = Petal.Length, y = Petal.Width, col = kmeans_iris$cl
 
 - Previous studies analysed the racially motivated stops using instruments. 
 - These guys looked at 3 million stops between 2008 and 2012, focusing in on 760,000 weapon stops. 
--  Legally cops can't stop people unless they think there's a likelihood of something going down. 
+-  Legally cops can't stop people unless they think there's a likelihood of something going down.  
 - this is the likelihood based only on information available to officers prior to the stop decision that the stopped individual has a weapon. 
 - They find that in 43% of the approximately 300,000 CPW stops between 2011 and 2012, there was at most a 1% chance of finding a weapon on the suspect.
 
@@ -2533,7 +2533,8 @@ iris.testLabels  <- iris[ind == 2, 5]
 ## Example: The model itself
 
 ```{r}
-iris_pred <- knn(train = iris.training, test = iris.test, cl = iris.trainLabels, k = 3) #This is the classifier.
+library(class)
+iris_pred <- knn(train = iris.training, test = iris.test, cl = iris.trainLabels, k = 5) #This is the classifier.
 iris_pred # Get some results back. The result of this command is the factor vector with the predicted classes for each row of the test data.
 ```
 
@@ -2610,6 +2611,14 @@ See Breiman, L. (2001a), “[Statistical Modeling: The Two Cultures](http://www2
 
 - Semi-Supervised 
 
+
+## Examples 
+
+- CLustering 
+- Image manipulation [Click here](http://alteredqualia.com/xg/examples/eyes_gaze2.html)
+- 
+
+
 ## A model is a representation for a purpose. 
 
 * representation: it stands for something in reality we'd like to know more about. 
@@ -2668,7 +2677,7 @@ plot(my_model) # Produces ALL the plots
 
 The formula is a bit like a sentence. EG WAGE ~ SECTOR is equivalent to 
 
-1. WAGE as a fucntion of SECTOR
+1. WAGE as a function of SECTOR
 2. WAGE accounted for by SECTOR
 3. WAGE modeled by SECTOR
 4. WAGE explained by SECTOR
@@ -2678,7 +2687,7 @@ The formula is a bit like a sentence. EG WAGE ~ SECTOR is equivalent to
 
 ## A digression on the NULL hypothesis for a moment.
 
-What we're actually trying to do the whoe time is explain variation. 
+What we're actually trying to do the whole time is explain variation. 
 
 This means we must try to distinguish random variation from purposeful, or causal, variation. 
 
@@ -2797,9 +2806,10 @@ grid.arrange(p1, p2, ncol=2)
 ## Example 
 ```{r}
 library(mosaic)
+library(rpart)
 library(statisticalModeling)
 # Build a model: insurance_cost_model
-insurance_cost_model <- lm(Cost ~ Age + Sex + Coverage, data=AARP)
+insurance_cost_model <- rpart(Cost ~ Age + Sex + Coverage, data=AARP, cp=0.005)
 #Construct a data frame: example_vals 
 example_vals <- data.frame(Age = 60, Sex = "F", Coverage = 200)
 # Predict insurance cost using predict()
